@@ -192,9 +192,68 @@
     /* ── HOW TO USE SECTION ── */
     #how-to {
       padding: 6rem 1.5rem 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .how-to-inner {
       max-width: 860px;
       margin: 0 auto;
+      position: relative;
+      z-index: 2;
     }
+
+    /* Background decorations */
+    .ht-circle {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px dashed;
+      pointer-events: none;
+    }
+    .htc1 { width: 440px; height: 440px; top: -150px; right: -110px; border-color: var(--secondary); opacity: 0.07; animation: spin 70s linear infinite; }
+    .htc2 { width: 300px; height: 300px; bottom: -100px; left: -90px;  border-color: var(--primary);   opacity: 0.07; animation: spin 50s linear infinite reverse; }
+    .htc3 { width: 170px; height: 170px; top: 42%;     left: -50px;   border-color: var(--secondary); opacity: 0.05; animation: spin 32s linear infinite; }
+
+    .ht-star {
+      position: absolute;
+      pointer-events: none;
+      line-height: 1;
+      animation: floatStar 7s ease-in-out infinite;
+    }
+
+    @keyframes floatStar {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      40%       { transform: translateY(-16px) rotate(12deg); }
+      70%       { transform: translateY(-8px) rotate(-6deg); }
+    }
+
+    /* Scroll reveal */
+    .reveal { opacity: 0; }
+
+    @keyframes revealUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal.visible {
+      animation: revealUp 0.65s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+    }
+
+    /* Stagger — step cards */
+    .steps .step-card:nth-child(1) { animation-delay: 0s; }
+    .steps .step-card:nth-child(2) { animation-delay: 0.12s; }
+    .steps .step-card:nth-child(3) { animation-delay: 0.24s; }
+    .steps .step-card:nth-child(4) { animation-delay: 0.36s; }
+
+    /* Stagger — field chips */
+    .fields-grid .field-chip:nth-child(1) { animation-delay: 0s; }
+    .fields-grid .field-chip:nth-child(2) { animation-delay: 0.07s; }
+    .fields-grid .field-chip:nth-child(3) { animation-delay: 0.14s; }
+    .fields-grid .field-chip:nth-child(4) { animation-delay: 0.21s; }
+    .fields-grid .field-chip:nth-child(5) { animation-delay: 0.28s; }
+    .fields-grid .field-chip:nth-child(6) { animation-delay: 0.35s; }
+    .fields-grid .field-chip:nth-child(7) { animation-delay: 0.42s; }
+    .fields-grid .field-chip:nth-child(8) { animation-delay: 0.49s; }
 
     .section-label {
       font-size: 0.75rem;
@@ -504,111 +563,124 @@
 <!-- ══════════ HOW TO USE ══════════ -->
 <section id="how-to">
 
-  <div class="section-label">✦ วิธีการใช้งาน ✦</div>
-  <h2 class="section-title">ใช้งานง่าย <em>4 ขั้นตอน</em></h2>
-  <p class="section-sub">กรอกข้อมูลแบรนด์ของคุณ แล้วปล่อยให้ AI สร้างภาพให้อัตโนมัติ</p>
+  <!-- Background decorations -->
+  <div class="ht-circle htc1"></div>
+  <div class="ht-circle htc2"></div>
+  <div class="ht-circle htc3"></div>
+  <span class="ht-star" style="top:6%;left:4%;font-size:1.4rem;color:var(--primary);opacity:0.2;animation-delay:0s">✦</span>
+  <span class="ht-star" style="top:18%;right:5%;font-size:0.9rem;color:var(--secondary);opacity:0.16;animation-delay:1.8s">✦</span>
+  <span class="ht-star" style="top:50%;left:2%;font-size:0.65rem;color:var(--primary);opacity:0.15;animation-delay:3.2s">✦</span>
+  <span class="ht-star" style="bottom:22%;right:3%;font-size:1.1rem;color:var(--secondary);opacity:0.14;animation-delay:0.9s">✦</span>
+  <span class="ht-star" style="bottom:40%;left:7%;font-size:0.8rem;color:var(--primary);opacity:0.12;animation-delay:2.5s">✦</span>
 
-  <!-- Steps -->
-  <div class="steps">
-    <div class="step-card">
-      <div class="step-badge">1</div>
-      <span class="step-icon">🎨</span>
-      <div class="step-title">กรอกข้อมูลแบรนด์</div>
-      <div class="step-desc">ใส่ชื่อแบรนด์, สี CI, logo และภาพอ้างอิงสไตล์ที่ต้องการ</div>
+  <div class="how-to-inner">
+
+    <div class="section-label">✦ วิธีการใช้งาน ✦</div>
+    <h2 class="section-title">ใช้งานง่าย <em>4 ขั้นตอน</em></h2>
+    <p class="section-sub">กรอกข้อมูลแบรนด์ของคุณ แล้วปล่อยให้ AI สร้างภาพให้อัตโนมัติ</p>
+
+    <!-- Steps -->
+    <div class="steps">
+      <div class="step-card reveal">
+        <div class="step-badge">1</div>
+        <span class="step-icon">🎨</span>
+        <div class="step-title">กรอกข้อมูลแบรนด์</div>
+        <div class="step-desc">ใส่ชื่อแบรนด์, สี CI, logo และภาพอ้างอิงสไตล์ที่ต้องการ</div>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-badge">2</div>
+        <span class="step-icon">🗂️</span>
+        <div class="step-title">เพิ่ม Content</div>
+        <div class="step-desc">กรอก Voucher, Collection, Coupon และภาพบรรยากาศของแบรนด์</div>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-badge">3</div>
+        <span class="step-icon">📧</span>
+        <div class="step-title">ใส่ Email</div>
+        <div class="step-desc">ระบุ email สำหรับรับผลลัพธ์ภาพที่ AI สร้างเสร็จแล้ว</div>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-badge">4</div>
+        <span class="step-icon">🪿</span>
+        <div class="step-title">รับภาพทาง Email</div>
+        <div class="step-desc">กด "ส่งข้อมูล" รอรับภาพแบรนด์ที่สร้างอัตโนมัติทาง email</div>
+      </div>
     </div>
-    <div class="step-card">
-      <div class="step-badge">2</div>
-      <span class="step-icon">🗂️</span>
-      <div class="step-title">เพิ่ม Content</div>
-      <div class="step-desc">กรอก Voucher, Collection, Coupon และภาพบรรยากาศของแบรนด์</div>
+
+    <!-- Fields inside the form -->
+    <div class="fields-title reveal">ข้อมูลที่ต้องกรอกใน <em>ฟอร์ม</em></div>
+    <div class="fields-grid">
+      <div class="field-chip reveal">
+        <div class="field-chip-num">1</div>
+        <div>
+          <div class="field-chip-label">Biodata</div>
+          <div class="field-chip-sub">ชื่อแบรนด์ · สี CI · Logo</div>
+        </div>
+      </div>
+      <div class="field-chip reveal">
+        <div class="field-chip-num">2</div>
+        <div>
+          <div class="field-chip-label">Ref Pics</div>
+          <div class="field-chip-sub">ภาพอ้างอิงสไตล์ 3 รูป</div>
+        </div>
+      </div>
+      <div class="field-chip reveal">
+        <div class="field-chip-num">3</div>
+        <div>
+          <div class="field-chip-label">Voucher</div>
+          <div class="field-chip-sub">ชื่อ · รายละเอียด · 5 รูป</div>
+        </div>
+      </div>
+      <div class="field-chip reveal">
+        <div class="field-chip-num">4</div>
+        <div>
+          <div class="field-chip-label">Collection</div>
+          <div class="field-chip-sub">ชื่อ · รายละเอียด · 10 รูป</div>
+        </div>
+      </div>
+      <div class="field-chip reveal">
+        <div class="field-chip-num">5</div>
+        <div>
+          <div class="field-chip-label">Coupons</div>
+          <div class="field-chip-sub">Dynamic สูงสุด 30 ใบ</div>
+        </div>
+      </div>
+      <div class="field-chip reveal">
+        <div class="field-chip-num">6</div>
+        <div>
+          <div class="field-chip-label">ภาพบรรยากาศ</div>
+          <div class="field-chip-sub">Dynamic สูงสุด 5 ชุด</div>
+        </div>
+      </div>
+      <div class="field-chip reveal">
+        <div class="field-chip-num">7</div>
+        <div>
+          <div class="field-chip-label">Rich Menu</div>
+          <div class="field-chip-sub">ภาพ Line Rich Menu</div>
+        </div>
+      </div>
+      <div class="field-chip reveal">
+        <div class="field-chip-num">8</div>
+        <div>
+          <div class="field-chip-label">Email</div>
+          <div class="field-chip-sub">รับผลลัพธ์ทาง email</div>
+        </div>
+      </div>
     </div>
-    <div class="step-card">
-      <div class="step-badge">3</div>
-      <span class="step-icon">📧</span>
-      <div class="step-title">ใส่ Email</div>
-      <div class="step-desc">ระบุ email สำหรับรับผลลัพธ์ภาพที่ AI สร้างเสร็จแล้ว</div>
+
+    <!-- Tips -->
+    <div class="tips-box reveal">
+      <div class="tips-title">✦ <em>Tips</em> การใช้งาน</div>
+      <ul class="tips-list">
+        <li>ระบบบันทึกข้อมูลอัตโนมัติทุกครั้งที่กรอก หากปิดหน้าต่างแล้วกลับมา ข้อมูลจะยังอยู่ครบ</li>
+        <li>ใส่ URL รูปภาพที่ใช้งานได้จริง (Google Drive public link, Imgur, Cloudinary ฯลฯ) เพื่อให้ AI ดึงภาพได้ถูกต้อง</li>
+        <li>สามารถพิมพ์ hex code สี CI ตรง ๆ ได้เลย เช่น <code style="background:var(--bg);padding:0.1rem 0.4rem;border-radius:4px;font-size:0.82rem">#FF5733</code></li>
+        <li>Coupon แต่ละใบมีประเภทให้เลือก เช่น รับฟรี, 1แถม1, ส่วนลด บาท/เปอร์เซนต์, Birthday, Double คุ้ม</li>
+        <li>กดปุ่ม "ลบทั้งหมด" ใน navbar เพื่อล้างข้อมูลในฟอร์มและเริ่มใหม่ได้ตลอดเวลา</li>
+      </ul>
     </div>
-    <div class="step-card">
-      <div class="step-badge">4</div>
-      <span class="step-icon">🪿</span>
-      <div class="step-title">รับภาพทาง Email</div>
-      <div class="step-desc">กด "ส่งข้อมูล" รอรับภาพแบรนด์ที่สร้างอัตโนมัติทาง email</div>
-    </div>
+
   </div>
-
-  <!-- Fields inside the form -->
-  <div class="fields-title">ข้อมูลที่ต้องกรอกใน <em>ฟอร์ม</em></div>
-  <div class="fields-grid">
-    <div class="field-chip">
-      <div class="field-chip-num">1</div>
-      <div>
-        <div class="field-chip-label">Biodata</div>
-        <div class="field-chip-sub">ชื่อแบรนด์ · สี CI · Logo</div>
-      </div>
-    </div>
-    <div class="field-chip">
-      <div class="field-chip-num">2</div>
-      <div>
-        <div class="field-chip-label">Ref Pics</div>
-        <div class="field-chip-sub">ภาพอ้างอิงสไตล์ 3 รูป</div>
-      </div>
-    </div>
-    <div class="field-chip">
-      <div class="field-chip-num">3</div>
-      <div>
-        <div class="field-chip-label">Voucher</div>
-        <div class="field-chip-sub">ชื่อ · รายละเอียด · 5 รูป</div>
-      </div>
-    </div>
-    <div class="field-chip">
-      <div class="field-chip-num">4</div>
-      <div>
-        <div class="field-chip-label">Collection</div>
-        <div class="field-chip-sub">ชื่อ · รายละเอียด · 10 รูป</div>
-      </div>
-    </div>
-    <div class="field-chip">
-      <div class="field-chip-num">5</div>
-      <div>
-        <div class="field-chip-label">Coupons</div>
-        <div class="field-chip-sub">Dynamic สูงสุด 30 ใบ</div>
-      </div>
-    </div>
-    <div class="field-chip">
-      <div class="field-chip-num">6</div>
-      <div>
-        <div class="field-chip-label">ภาพบรรยากาศ</div>
-        <div class="field-chip-sub">Dynamic สูงสุด 5 ชุด</div>
-      </div>
-    </div>
-    <div class="field-chip">
-      <div class="field-chip-num">7</div>
-      <div>
-        <div class="field-chip-label">Rich Menu</div>
-        <div class="field-chip-sub">ภาพ Line Rich Menu</div>
-      </div>
-    </div>
-    <div class="field-chip">
-      <div class="field-chip-num">8</div>
-      <div>
-        <div class="field-chip-label">Email</div>
-        <div class="field-chip-sub">รับผลลัพธ์ทาง email</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tips -->
-  <div class="tips-box">
-    <div class="tips-title">✦ <em>Tips</em> การใช้งาน</div>
-    <ul class="tips-list">
-      <li>ระบบบันทึกข้อมูลอัตโนมัติทุกครั้งที่กรอก หากปิดหน้าต่างแล้วกลับมา ข้อมูลจะยังอยู่ครบ</li>
-      <li>ใส่ URL รูปภาพที่ใช้งานได้จริง (Google Drive public link, Imgur, Cloudinary ฯลฯ) เพื่อให้ AI ดึงภาพได้ถูกต้อง</li>
-      <li>สามารถพิมพ์ hex code สี CI ตรง ๆ ได้เลย เช่น <code style="background:var(--bg);padding:0.1rem 0.4rem;border-radius:4px;font-size:0.82rem">#FF5733</code></li>
-      <li>Coupon แต่ละใบมีประเภทให้เลือก เช่น รับฟรี, 1แถม1, ส่วนลด บาท/เปอร์เซนต์, Birthday, Double คุ้ม</li>
-      <li>กดปุ่ม "ลบทั้งหมด" ใน navbar เพื่อล้างข้อมูลในฟอร์มและเริ่มใหม่ได้ตลอดเวลา</li>
-    </ul>
-  </div>
-
 </section>
 
 
@@ -625,5 +697,23 @@
   ✦ Built with <span>Goose Gen</span> · Powered by n8n
 </footer>
 
+<script>
+  // Scroll-triggered reveal using IntersectionObserver
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      el.classList.add('visible');
+      // After animation ends, remove it so hover transforms work normally
+      el.addEventListener('animationend', () => {
+        el.style.opacity = '1';
+        el.style.animation = 'none';
+      }, { once: true });
+      observer.unobserve(el);
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
 </body>
 </html>
