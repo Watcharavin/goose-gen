@@ -228,47 +228,87 @@
     /* Steps */
     .steps {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: 1.25rem;
       margin-bottom: 4rem;
+      position: relative;
+    }
+
+    /* connector line between cards on desktop */
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 2.6rem;
+      left: calc(25% - 0.5rem);
+      right: calc(25% - 0.5rem);
+      height: 2px;
+      background: repeating-linear-gradient(90deg, var(--secondary) 0, var(--secondary) 6px, transparent 6px, transparent 14px);
+      opacity: 0.18;
+      pointer-events: none;
+      z-index: 0;
     }
 
     .step-card {
       background: var(--bg-dark);
       border-radius: 24px;
-      padding: 1.75rem 1.5rem;
+      padding: 1.5rem 1.25rem 1.75rem;
       box-shadow: 6px 6px 0 rgba(0,0,0,0.05);
       position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .step-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 6px 10px 0 rgba(0,0,0,0.07);
     }
 
-    .step-num {
-      font-family: 'Caveat', cursive;
-      font-size: 3.5rem;
-      font-weight: 700;
-      color: var(--secondary);
-      opacity: 0.18;
-      line-height: 1;
-      margin-bottom: 0.75rem;
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--secondary);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1.1rem;
+      box-shadow: 3px 3px 0 rgba(72,92,194,0.25);
     }
 
     .step-icon {
-      font-size: 1.75rem;
-      margin-bottom: 0.75rem;
+      font-size: 2rem;
+      margin-bottom: 0.85rem;
       display: block;
+      line-height: 1;
     }
 
     .step-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 700;
       color: var(--text);
       margin-bottom: 0.4rem;
     }
 
     .step-desc {
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       color: var(--muted);
       line-height: 1.65;
+    }
+
+    @media (max-width: 860px) {
+      .steps { grid-template-columns: repeat(2, 1fr); }
+      .steps::before { display: none; }
+    }
+    @media (max-width: 480px) {
+      .steps { grid-template-columns: 1fr; gap: 0.875rem; }
+      .step-card { flex-direction: row; align-items: flex-start; gap: 1rem; padding: 1.25rem; }
+      .step-badge { margin-bottom: 0; flex-shrink: 0; }
+      .step-icon  { font-size: 1.5rem; margin-bottom: 0.4rem; }
     }
 
     /* What's inside */
@@ -384,10 +424,23 @@
     }
     footer span { color: var(--primary); }
 
+    /* Fields grid responsive */
+    @media (max-width: 640px) {
+      .fields-grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+      .field-chip  { padding: 0.85rem 1rem; }
+    }
+    @media (max-width: 380px) {
+      .fields-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Section responsive */
     @media (max-width: 600px) {
-      .navbar { padding: 0.75rem 1.25rem; }
-      .nav-link { display: none; }
-      #how-to { padding: 5rem 1.25rem 4rem; }
+      .navbar      { padding: 0.75rem 1.25rem; }
+      .nav-link    { display: none; }
+      #how-to      { padding: 5rem 1.25rem 4rem; }
+      .section-title { font-size: 1.7rem; }
+      .tips-box    { padding: 1.5rem 1.25rem; }
+      .cta-bottom  { padding: 3rem 1.25rem 4rem; }
     }
   </style>
 </head>
@@ -458,25 +511,25 @@
   <!-- Steps -->
   <div class="steps">
     <div class="step-card">
-      <div class="step-num">01</div>
+      <div class="step-badge">1</div>
       <span class="step-icon">🎨</span>
       <div class="step-title">กรอกข้อมูลแบรนด์</div>
       <div class="step-desc">ใส่ชื่อแบรนด์, สี CI, logo และภาพอ้างอิงสไตล์ที่ต้องการ</div>
     </div>
     <div class="step-card">
-      <div class="step-num">02</div>
+      <div class="step-badge">2</div>
       <span class="step-icon">🗂️</span>
       <div class="step-title">เพิ่ม Content</div>
       <div class="step-desc">กรอก Voucher, Collection, Coupon และภาพบรรยากาศของแบรนด์</div>
     </div>
     <div class="step-card">
-      <div class="step-num">03</div>
+      <div class="step-badge">3</div>
       <span class="step-icon">📧</span>
       <div class="step-title">ใส่ Email</div>
       <div class="step-desc">ระบุ email สำหรับรับผลลัพธ์ภาพที่ AI สร้างเสร็จแล้ว</div>
     </div>
     <div class="step-card">
-      <div class="step-num">04</div>
+      <div class="step-badge">4</div>
       <span class="step-icon">🪿</span>
       <div class="step-title">รับภาพทาง Email</div>
       <div class="step-desc">กด "ส่งข้อมูล" รอรับภาพแบรนด์ที่สร้างอัตโนมัติทาง email</div>
