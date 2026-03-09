@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goose Gen — กรอกข้อมูลแบรนด์</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #FAF3E3;
+      --bg-dark:   #F0E6CC;
+      --primary:   #C25048;
+      --secondary: #485CC2;
+      --text:      #1A1410;
+      --muted:     #5A4F40;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.85rem 2.4rem;
+      border-radius: 999px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      font-size: 0.85rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .btn-fill {
+      background: var(--secondary);
+      color: #fff;
+      box-shadow: 4px 4px 0 rgba(72,92,194,0.3);
+    }
+    .btn-fill:not(:disabled):hover  { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 rgba(72,92,194,0.3); }
+    .btn-fill:not(:disabled):active { transform: translate(1px,1px);   box-shadow: 2px 2px 0 rgba(72,92,194,0.3); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 2px solid var(--text);
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.07);
+      padding: 0.55rem 1.3rem;
+      font-size: 0.78rem;
+      text-decoration: none;
+    }
+    .btn-outline:hover { transform: translate(-1px,-1px); box-shadow: 5px 5px 0 rgba(0,0,0,0.07); }
+
+    .btn-add {
+      background: transparent;
+      color: var(--secondary);
+      border: 2px solid var(--secondary);
+      box-shadow: 3px 3px 0 rgba(72,92,194,0.15);
+      padding: 0.55rem 1.4rem;
+      font-size: 0.78rem;
+    }
+    .btn-add:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 rgba(72,92,194,0.15); }
+
+    .btn-del {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 3px 3px 0 rgba(194,80,72,0.25);
+      padding: 0.32rem 0.7rem;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+    }
+    .btn-del:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 rgba(194,80,72,0.25); }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky;
+      top: 0; z-index: 100;
+      background: var(--bg-dark);
+      border-bottom: 2px solid rgba(0,0,0,0.06);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .topbar-logo {
+      font-family: 'Caveat', cursive;
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .topbar-logo em { color: var(--secondary); font-style: normal; }
+    .topbar-back { margin-left: auto; }
+
+    /* ── FORM LAYOUT ── */
+    .form-wrap {
+      flex: 1;
+      max-width: 840px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--bg-dark);
+      border-radius: 24px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.055);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .badge {
+      flex-shrink: 0;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: var(--secondary);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 3px;
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.15rem;
+    }
+    .card-title em { color: var(--primary); font-style: italic; }
+
+    .card-sub {
+      font-size: 0.73rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* ── FORM FIELDS ── */
+    .field { margin-bottom: 1.1rem; }
+    .field:last-child { margin-bottom: 0; }
+
+    .flabel {
+      display: block;
+      font-size: 0.71rem;
+      font-weight: 500;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.35rem;
+    }
+
+    .finput, .ftextarea, .fselect {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      background: var(--bg);
+      border: 2px solid rgba(0,0,0,0.09);
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      appearance: none;
+    }
+    .finput:focus, .ftextarea:focus, .fselect:focus {
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(72,92,194,0.1);
+    }
+    .finput.err { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(194,80,72,0.1); }
+
+    .ftextarea { resize: vertical; min-height: 82px; }
+
+    .fselect {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A4F40' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      padding-right: 2.5rem;
+      cursor: pointer;
+    }
+
+    .ferr { font-size: 0.72rem; color: var(--primary); margin-top: 0.3rem; display: none; }
+    .ferr.show { display: block; }
+
+    /* ── COLOR PICKERS ── */
+    .color-row { display: flex; gap: 1.5rem; align-items: flex-start; flex-wrap: wrap; }
+
+    .color-item { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; }
+
+    .color-lbl {
+      font-size: 0.67rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .color-swatch {
+      position: relative;
+      width: 58px; height: 58px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+      cursor: pointer;
+    }
+    .color-swatch input[type="color"] {
+      position: absolute;
+      width: 200%; height: 200%;
+      top: -50%; left: -50%;
+      border: none; padding: 0;
+      cursor: pointer;
+    }
+
+    .color-hex {
+      font-size: 0.65rem;
+      color: var(--muted);
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── IMAGE GRID ── */
+    .img-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    @media (max-width: 480px) { .img-grid { grid-template-columns: 1fr; } }
+
+    /* ── CAROUSEL ── */
+    .carousel {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding: 0.25rem 0.25rem 1rem;
+      scrollbar-width: thin;
+      scrollbar-color: var(--secondary) transparent;
+    }
+    .carousel::-webkit-scrollbar { height: 4px; }
+    .carousel::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 999px; }
+    .carousel:empty::before {
+      content: 'ยังไม่มีรายการ — กดปุ่ม Add เพื่อเพิ่ม';
+      font-size: 0.82rem;
+      color: var(--muted);
+      padding: 0.5rem 0.25rem;
+      opacity: 0.7;
+    }
+
+    .c-card {
+      flex: 0 0 100%;
+      scroll-snap-align: start;
+      background: var(--bg);
+      border-radius: 20px;
+      padding: 1.25rem;
+      border: 2px solid rgba(0,0,0,0.07);
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.05);
+      position: relative;
+    }
+
+    .c-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+      padding-right: 2.5rem;
+    }
+
+    .c-del { position: absolute; top: 1rem; right: 1rem; }
+
+    .c-field { margin-bottom: 0.8rem; }
+    .c-field:last-child { margin-bottom: 0; }
+    .c-field .flabel { font-size: 0.67rem; }
+    .c-field .finput, .c-field .ftextarea, .c-field .fselect {
+      font-size: 0.87rem;
+      padding: 0.6rem 0.85rem;
+      border-radius: 10px;
+    }
+
+    .add-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .add-count {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    /* ── SUBMIT ── */
+    .submit-wrap {
+      text-align: center;
+      padding: 1.5rem 0 2rem;
+    }
+    .submit-deco {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+    }
+    .st { color: var(--primary); opacity: 0.4; font-size: 1rem; }
+
+    /* ── AUTOSAVE ── */
+    #autosave-bar {
+      position: fixed;
+      bottom: 1.5rem; right: 1.5rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+      background: var(--bg-dark);
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 999px;
+      padding: 0.35rem 0.9rem;
+      opacity: 0;
+      transition: opacity 0.35s;
+      pointer-events: none;
+      z-index: 999;
+    }
+    #autosave-bar.show { opacity: 1; }
+
+    /* ── MODAL ── */
+    .overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(26,20,16,0.55);
+      backdrop-filter: blur(6px);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .overlay.show { display: flex; }
+
+    .modal {
+      background: var(--bg);
+      border-radius: 28px;
+      padding: 2.75rem 2.25rem;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 10px 10px 0 rgba(0,0,0,0.1);
+      animation: pop 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes pop { from { transform: scale(0.82); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    .modal-icon  { font-size: 3.5rem; margin-bottom: 0.75rem; }
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; font-weight: 700;
+      color: var(--text); margin-bottom: 0.6rem;
+    }
+    .modal-body {
+      font-size: 0.9rem; color: var(--muted);
+      margin-bottom: 1.75rem; line-height: 1.7;
+    }
+    .modal-email { color: var(--secondary); font-weight: 500; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .card { padding: 1.4rem 1.25rem; }
+      .form-wrap { padding: 1.25rem 0.875rem 6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sticky topbar -->
+<div class="topbar">
+  <div class="topbar-logo">Goose <em>Gen</em></div>
+  <a href="index.html" class="btn btn-outline topbar-back">← กลับ</a>
+</div>
+
+<div class="form-wrap">
+<form id="the-form" novalidate>
+
+  <!-- ════ 1. BIODATA ════ -->
+  <div class="card">
+    <div class="card-head">
+      <div class="badge">1</div>
+      <div>
+        <div class="card-title">Biodata <em>แบรนด์</em></div>
+        <div class="card-sub">ข้อมูลพื้นฐานของแบรนด์</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="flabel" for="brandName">Brand Name</label>
+      <input type="text" id="brandName" class="finput" placeholder="ชื่อแบรนด์ของคุณ">
+    </div>
+
+    <div class="field">
+      <label class="flabel">CI Colors</label>
+      <div class="color-row">
+        <div class="color-item">
+          <div class="color-lbl">Color 1</div>
+          <div class="color-swatch"><input type="color" id="ciColor1" value="#C25048"></div>
+          <div class="color-hex" id="hex1">#C25048</div>
+        </div>
+        <div class="color-item">
+          <div class="color-lbl">Color 2</div>
+          <div class="color-swatch"><input type="color" id="ciColor2" value="#485CC2"></div>
+          <div class="color-hex" id="hex2">#485CC2</div>
+        </div>
+        <div class="color-item">
+          <div class="color-lbl">Color 3</div>
+          <div class="color-swatch"><input type="color" id="ciColor3" value="#FAF3E3"></div>
+          <div class="color-hex" id="hex3">#FAF3E3</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="flabel" for="logoLink">Link Picture Logo</label>
+      <input type="url" id="logoLink" class="finput" placeholder="https://...">
+    </div>
+  </div>
+
+  <!-- ════ 2. REF PICS ════ -->
+  <div class="card">
+    <div class="card-head">
+      <div class="badge">2</div>
+      <div>
+        <div class="card-title">Ref <em>Pics</em></div>
+        <div class="card-sub">ภาพอ้างอิงสไตล์</div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="flabel" for="ref1">Image Link 1</label>
+      <input type="url" id="ref1" class="finput" placeholder="https://...">
+    </div>
+    <div class="field">
+      <label class="flabel" for="ref2">Image Link 2</label>
+      <input type="url" id="ref2" class="finput" placeholder="https://...">
+    </div>
+    <div class="field">
+      <label class="flabel" for="ref3">Image Link 3</label>
+      <input type="url" id="ref3" class="finput" placeholder="https://...">
+    </div>
+  </div>
+
+  <!-- ════ 3. VOUCHER ════ -->
+  <div class="card">
+    <div class="card-head">
+      <div class="badge">3</div>
+      <div>
+        <div class="card-title">Voucher <em>Details</em></div>
+        <div class="card-sub">ข้อมูล voucher ของแบรนด์</div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="flabel" for="vTitle">Title</label>
+      <input type="text" id="vTitle" class="finput" placeholder="ชื่อ Voucher">
+    </div>
+    <div class="field">
+      <label class="flabel" for="vDetail">Detail</label>
+      <textarea id="vDetail" class="ftextarea" placeholder="รายละเอียด Voucher..."></textarea>
+    </div>
+    <div class="field">
+      <label class="flabel">Image Links</label>
+      <div class="img-grid">
+        <div class="field" style="margin-bottom:0"><label class="flabel" for="vImg1">Image 1</label><input type="url" id="vImg1" class="finput" placeholder="https://..."></div>
+        <div class="field" style="margin-bottom:0"><label class="flabel" for="vImg2">Image 2</label><input type="url" id="vImg2" class="finput" placeholder="https://..."></div>
+        <div class="field" style="margin-bottom:0"><label class="flabel" for="vImg3">Image 3</label><input type="url" id="vImg3" class="finput" placeholder="https://..."></div>
+        <div class="field" style="margin-bottom:0"><label class="flabel" for="vImg4">Image 4</label><input type="url" id="vImg4" class="finput" placeholder="https://..."></div>
+        <div class="field" style="margin-bottom:0;grid-column:1/-1"><label class="flabel" for="vImg5">Image 5</label><input type="url" id="vImg5" class="finput" placeholder="https://..."></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ 4. COLLECTION ════ -->
+  <div class="card">
+    <div class="card-head">
+      <div class="badge">4</div>
+      <div>
+        <div class="card-title">Collection <em>Details</em></div>
+        <div class="card-sub">ข้อมูล collection ของแบรนด์</div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="flabel" for="cTitle">Title</label>
+      <input type="text" id="cTitle" class="finput" placeholder="ชื่อ Collection">
+    </div>
+    <div class="field">
+      <label class="flabel" for="cDetail">Detail</label>
+      <textarea id="cDetail" class="ftextarea" placeholder="รายละเอียด Collection..."></textarea>
+    </div>
+    <div class="field">
+      <label class="flabel">Image Links (สูงสุด 10)</label>
+      <div class="img-grid">
+        <div class="field" style="margin-bottom:0"><label class="flabel" for="cImg1">Image 1</label><input type="url" id="cImg1" class="finput" placeholder="https://..."></div>
+        <div class="field" style="margin-bottom:0"><label class="flabel" for="cImg2">Image 2</label><input type="url" id="cImg2" class="finput" placeholder="https://..."></div>
+        <div class="field" style="margin-bottom:0"><label class="flabel" for="cImg3">Image 3</label><input type="url" id="cImg3" class="finput" placeholder="https://..."></div>
+        <div class="field" style="margin-bottom:0"><label class="flabel" for="cImg4">Image 4</label><input type="url" id="cImg4" class="finput" placeholder="https://..."></div>
+        <div class="field" style="margin-bottom:0"><label class="flabel" for="cImg5">Image 5</label><input type="url" id="cImg5" class="finput" placeholder="https://..."></div>
+        <div class="field" style="margin-bottom:0"><label class="flabel" for="cImg6">Image 6</label><input type="url" id="cImg6" class="finput" placeholder="https://..."></div>
+        <div class="field" style="margin-bottom:0"><label class="flabel" for="cImg7">Image 7</label><input type="url" id="cImg7" class="finput" placeholder="https://..."></div>
+        <div class="field" style="margin-bottom:0"><label class="flabel" for="cImg8">Image 8</label><input type="url" id="cImg8" class="finput" placeholder="https://..."></div>
+        <div class="field" style="margin-bottom:0"><label class="flabel" for="cImg9">Image 9</label><input type="url" id="cImg9" class="finput" placeholder="https://..."></div>
+        <div class="field" style="margin-bottom:0"><label class="flabel" for="cImg10">Image 10</label><input type="url" id="cImg10" class="finput" placeholder="https://..."></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ 5. COUPONS ════ -->
+  <div class="card">
+    <div class="card-head">
+      <div class="badge">5</div>
+      <div>
+        <div class="card-title">Coupons <em>Dynamic</em></div>
+        <div class="card-sub">เพิ่ม coupon ได้สูงสุด 30 รายการ</div>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:0.75rem;flex-shrink:0">
+        <span class="add-count" id="coupon-count">0 / 30 coupons</span>
+        <button type="button" class="btn btn-add" onclick="addCoupon()">+ Add Coupon</button>
+      </div>
+    </div>
+    <div id="coupon-carousel" class="carousel" aria-label="Coupon cards"></div>
+  </div>
+
+  <!-- ════ 6. ATMOSPHERE ════ -->
+  <div class="card">
+    <div class="card-head">
+      <div class="badge">6</div>
+      <div>
+        <div class="card-title">ภาพบรรยากาศ <em>Dynamic</em></div>
+        <div class="card-sub">เพิ่มภาพบรรยากาศได้สูงสุด 5 รายการ</div>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:0.75rem;flex-shrink:0">
+        <span class="add-count" id="atmo-count">0 / 5 ภาพ</span>
+        <button type="button" class="btn btn-add" onclick="addAtmo()">+ Add ภาพบรรยากาศ</button>
+      </div>
+    </div>
+    <div id="atmo-carousel" class="carousel" aria-label="Atmosphere cards"></div>
+  </div>
+
+  <!-- ════ 7. RICH MENU ════ -->
+  <div class="card">
+    <div class="card-head">
+      <div class="badge">7</div>
+      <div>
+        <div class="card-title">Rich <em>Menu</em></div>
+        <div class="card-sub">ภาพสำหรับ Line Rich Menu</div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="flabel" for="richMenu">Image Link</label>
+      <input type="url" id="richMenu" class="finput" placeholder="https://...">
+    </div>
+  </div>
+
+  <!-- ════ 8. EMAIL ════ -->
+  <div class="card">
+    <div class="card-head">
+      <div class="badge">8</div>
+      <div>
+        <div class="card-title">Email <em>รับผล</em></div>
+        <div class="card-sub">รับผลลัพธ์ทาง email</div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="flabel" for="email">Email Address <span style="color:var(--primary)">*</span></label>
+      <input type="email" id="email" class="finput" placeholder="your@email.com">
+      <div class="ferr" id="email-err">กรุณากรอก email ที่ถูกต้อง</div>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="submit-wrap">
+    <p class="submit-deco">
+      <span class="st">✦</span>
+      ตรวจสอบข้อมูลให้ครบก่อนส่ง
+      <span class="st">✦</span>
+    </p>
+    <button type="submit" class="btn btn-fill" id="submit-btn" style="padding:1rem 3rem;font-size:0.9rem">
+      ส่งข้อมูล →
+    </button>
+  </div>
+
+</form>
+</div><!-- /.form-wrap -->
+
+
+<!-- SUCCESS MODAL -->
+<div class="overlay" id="modal">
+  <div class="modal">
+    <div class="modal-icon">🪿</div>
+    <div class="modal-title">ส่งข้อมูลเรียบร้อย!</div>
+    <div class="modal-body">
+      รอรับผลที่ email ของคุณ<br>
+      <span class="modal-email" id="modal-email"></span>
+    </div>
+    <button class="btn btn-fill" onclick="closeModal()">รับทราบ ✦</button>
+  </div>
+</div>
+
+<!-- Autosave indicator -->
+<div id="autosave-bar">✦ บันทึกอัตโนมัติแล้ว</div>
+
+
+<script>
+// ─────────────────────────────────────────
+//  CONFIG
+// ─────────────────────────────────────────
+const WEBHOOK_URL = "https://your-n8n-webhook-url.com/webhook/goose-gen";
+
+// ─────────────────────────────────────────
+//  COLOR PICKERS
+// ─────────────────────────────────────────
+[1, 2, 3].forEach(n => {
+  const input = document.getElementById(`ciColor${n}`);
+  const hexEl = document.getElementById(`hex${n}`);
+  input.addEventListener('input', () => {
+    hexEl.textContent = input.value.toUpperCase();
+    autoSave();
+  });
+});
+
+// ─────────────────────────────────────────
+//  COUPON STATE
+// ─────────────────────────────────────────
+const COUPON_TYPES = ['รับฟรี', '1แถม1', 'ส่วนลด บาท', 'ส่วนลด เปอร์เซนต์', 'Birthday', 'Double คุ้ม'];
+const MAX_COUPONS = 30;
+let couponData = [];
+
+function addCoupon(preload = null) {
+  if (couponData.length >= MAX_COUPONS) return;
+  couponData.push(preload || {
+    title: '', type: COUPON_TYPES[0], detail: '',
+    images: ['', '', '', '', '']
+  });
+  renderCoupons();
+  if (!preload) {
+    setTimeout(() => {
+      const el = document.getElementById('coupon-carousel');
+      el.scrollLeft = el.scrollWidth;
+    }, 60);
+    autoSave();
+  }
+}
+
+function deleteCoupon(idx) {
+  syncCoupons();
+  couponData.splice(idx, 1);
+  renderCoupons();
+  autoSave();
+}
+
+function syncCoupons() {
+  document.querySelectorAll('.coupon-card').forEach((card, idx) => {
+    if (!couponData[idx]) return;
+    couponData[idx].title  = card.querySelector('.ci-title')?.value  || '';
+    couponData[idx].type   = card.querySelector('.ci-type')?.value   || '';
+    couponData[idx].detail = card.querySelector('.ci-detail')?.value || '';
+    for (let i = 0; i < 5; i++) {
+      couponData[idx].images[i] = card.querySelector(`[data-ci="${i}"]`)?.value || '';
+    }
+  });
+}
+
+function renderCoupons() {
+  const carousel = document.getElementById('coupon-carousel');
+  carousel.innerHTML = '';
+
+  couponData.forEach((c, idx) => {
+    const typeOpts = COUPON_TYPES.map(t =>
+      `<option${c.type === t ? ' selected' : ''}>${t}</option>`
+    ).join('');
+
+    const imgFields = [0, 1, 2, 3, 4].map(i => `
+      <div class="c-field">
+        <label class="flabel">Image ${i + 1}</label>
+        <input type="url" class="finput" data-ci="${i}" value="${esc(c.images[i])}" placeholder="https://...">
+      </div>
+    `).join('');
+
+    const card = document.createElement('div');
+    card.className = 'c-card coupon-card';
+    card.innerHTML = `
+      <button type="button" class="btn btn-del c-del" onclick="deleteCoupon(${idx})">✕</button>
+      <div class="c-card-title">Coupon ${idx + 1}</div>
+      <div class="c-field">
+        <label class="flabel">Title</label>
+        <input type="text" class="finput ci-title" value="${esc(c.title)}" placeholder="ชื่อ Coupon">
+      </div>
+      <div class="c-field">
+        <label class="flabel">Type</label>
+        <select class="fselect ci-type">${typeOpts}</select>
+      </div>
+      <div class="c-field">
+        <label class="flabel">Detail</label>
+        <textarea class="ftextarea ci-detail" placeholder="รายละเอียด...">${esc(c.detail)}</textarea>
+      </div>
+      <div class="c-field">
+        <label class="flabel">Image Links</label>
+        ${imgFields}
+      </div>
+    `;
+
+    card.querySelectorAll('input, textarea, select').forEach(el =>
+      el.addEventListener('input', () => { syncCoupons(); autoSave(); })
+    );
+
+    carousel.appendChild(card);
+  });
+
+  document.getElementById('coupon-count').textContent = `${couponData.length} / ${MAX_COUPONS} coupons`;
+}
+
+// ─────────────────────────────────────────
+//  ATMOSPHERE STATE
+// ─────────────────────────────────────────
+const MAX_ATMOS = 5;
+let atmosData = [];
+
+function addAtmo(preload = null) {
+  if (atmosData.length >= MAX_ATMOS) return;
+  atmosData.push(preload || {
+    title: '', detail: '',
+    images: ['', '', '', '', '']
+  });
+  renderAtmos();
+  if (!preload) {
+    setTimeout(() => {
+      const el = document.getElementById('atmo-carousel');
+      el.scrollLeft = el.scrollWidth;
+    }, 60);
+    autoSave();
+  }
+}
+
+function deleteAtmo(idx) {
+  syncAtmos();
+  atmosData.splice(idx, 1);
+  renderAtmos();
+  autoSave();
+}
+
+function syncAtmos() {
+  document.querySelectorAll('.atmo-card').forEach((card, idx) => {
+    if (!atmosData[idx]) return;
+    atmosData[idx].title  = card.querySelector('.ai-title')?.value  || '';
+    atmosData[idx].detail = card.querySelector('.ai-detail')?.value || '';
+    for (let i = 0; i < 5; i++) {
+      atmosData[idx].images[i] = card.querySelector(`[data-ai="${i}"]`)?.value || '';
+    }
+  });
+}
+
+function renderAtmos() {
+  const carousel = document.getElementById('atmo-carousel');
+  carousel.innerHTML = '';
+
+  atmosData.forEach((a, idx) => {
+    const imgFields = [0, 1, 2, 3, 4].map(i => `
+      <div class="c-field">
+        <label class="flabel">Image ${i + 1}</label>
+        <input type="url" class="finput" data-ai="${i}" value="${esc(a.images[i])}" placeholder="https://...">
+      </div>
+    `).join('');
+
+    const card = document.createElement('div');
+    card.className = 'c-card atmo-card';
+    card.innerHTML = `
+      <button type="button" class="btn btn-del c-del" onclick="deleteAtmo(${idx})">✕</button>
+      <div class="c-card-title">ภาพบรรยากาศ ${idx + 1}</div>
+      <div class="c-field">
+        <label class="flabel">Title</label>
+        <input type="text" class="finput ai-title" value="${esc(a.title)}" placeholder="ชื่อภาพบรรยากาศ">
+      </div>
+      <div class="c-field">
+        <label class="flabel">Detail</label>
+        <textarea class="ftextarea ai-detail" placeholder="รายละเอียด...">${esc(a.detail)}</textarea>
+      </div>
+      <div class="c-field">
+        <label class="flabel">Image Links</label>
+        ${imgFields}
+      </div>
+    `;
+
+    card.querySelectorAll('input, textarea').forEach(el =>
+      el.addEventListener('input', () => { syncAtmos(); autoSave(); })
+    );
+
+    carousel.appendChild(card);
+  });
+
+  document.getElementById('atmo-count').textContent = `${atmosData.length} / ${MAX_ATMOS} ภาพ`;
+}
+
+// ─────────────────────────────────────────
+//  HELPERS
+// ─────────────────────────────────────────
+function esc(str) {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function g(id) {
+  return document.getElementById(id)?.value || '';
+}
+
+// ─────────────────────────────────────────
+//  BUILD PAYLOAD
+// ─────────────────────────────────────────
+function buildPayload() {
+  syncCoupons();
+  syncAtmos();
+
+  return {
+    biodata: {
+      brandName: g('brandName'),
+      ciColors:  [g('ciColor1'), g('ciColor2'), g('ciColor3')],
+      logoLink:  g('logoLink')
+    },
+    refPics: [g('ref1'), g('ref2'), g('ref3')],
+    voucher: {
+      title:  g('vTitle'),
+      detail: g('vDetail'),
+      images: [1,2,3,4,5].map(i => g(`vImg${i}`))
+    },
+    collection: {
+      title:  g('cTitle'),
+      detail: g('cDetail'),
+      images: [1,2,3,4,5,6,7,8,9,10].map(i => g(`cImg${i}`))
+    },
+    coupons: couponData.map(c => ({
+      title:  c.title,
+      type:   c.type,
+      detail: c.detail,
+      images: [...c.images]
+    })),
+    atmosphere: atmosData.map(a => ({
+      title:  a.title,
+      detail: a.detail,
+      images: [...a.images]
+    })),
+    richMenu: { imageLink: g('richMenu') },
+    email:    g('email')
+  };
+}
+
+// ─────────────────────────────────────────
+//  LOCALSTORAGE AUTO-SAVE
+// ─────────────────────────────────────────
+let saveTimer;
+
+function autoSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    const payload = buildPayload();
+    payload._meta = {
+      couponsCount: couponData.length,
+      atmosCount:   atmosData.length
+    };
+    localStorage.setItem('gooseGenFormData', JSON.stringify(payload));
+    flashSave();
+  }, 400);
+}
+
+function flashSave() {
+  const el = document.getElementById('autosave-bar');
+  el.classList.add('show');
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ─────────────────────────────────────────
+//  RESTORE FROM LOCALSTORAGE
+// ─────────────────────────────────────────
+function restore() {
+  try {
+    const raw = localStorage.getItem('gooseGenFormData');
+    if (!raw) return;
+    const d = JSON.parse(raw);
+
+    const set = (id, v) => {
+      const el = document.getElementById(id);
+      if (el && v != null && v !== '') el.value = v;
+    };
+
+    set('brandName', d.biodata?.brandName);
+    if (d.biodata?.ciColors) {
+      d.biodata.ciColors.forEach((c, i) => {
+        const n = i + 1;
+        set(`ciColor${n}`, c);
+        if (c) document.getElementById(`hex${n}`).textContent = c.toUpperCase();
+      });
+    }
+    set('logoLink', d.biodata?.logoLink);
+
+    d.refPics?.forEach((v, i) => set(`ref${i + 1}`, v));
+
+    set('vTitle',  d.voucher?.title);
+    set('vDetail', d.voucher?.detail);
+    d.voucher?.images?.forEach((v, i) => set(`vImg${i + 1}`, v));
+
+    set('cTitle',  d.collection?.title);
+    set('cDetail', d.collection?.detail);
+    d.collection?.images?.forEach((v, i) => set(`cImg${i + 1}`, v));
+
+    const cc = d._meta?.couponsCount || 0;
+    if (cc > 0 && d.coupons?.length) {
+      d.coupons.slice(0, cc).forEach(c => {
+        addCoupon({
+          title:  c.title  || '',
+          type:   c.type   || COUPON_TYPES[0],
+          detail: c.detail || '',
+          images: c.images?.length ? [...c.images] : ['', '', '', '', '']
+        });
+      });
+    }
+
+    const ac = d._meta?.atmosCount || 0;
+    if (ac > 0 && d.atmosphere?.length) {
+      d.atmosphere.slice(0, ac).forEach(a => {
+        addAtmo({
+          title:  a.title  || '',
+          detail: a.detail || '',
+          images: a.images?.length ? [...a.images] : ['', '', '', '', '']
+        });
+      });
+    }
+
+    set('richMenu', d.richMenu?.imageLink);
+    set('email',    d.email);
+
+  } catch (e) {
+    console.error('Restore failed:', e);
+  }
+}
+
+// ─────────────────────────────────────────
+//  STATIC INPUT LISTENERS
+// ─────────────────────────────────────────
+function addStaticListeners() {
+  document.querySelectorAll('#the-form .finput, #the-form .ftextarea, #the-form .fselect').forEach(el => {
+    if (!el.closest('.c-card')) {
+      el.addEventListener('input', autoSave);
+    }
+  });
+}
+
+// ─────────────────────────────────────────
+//  FORM SUBMISSION
+// ─────────────────────────────────────────
+document.getElementById('the-form').addEventListener('submit', async e => {
+  e.preventDefault();
+
+  const emailEl  = document.getElementById('email');
+  const emailErr = document.getElementById('email-err');
+  const email    = emailEl.value.trim();
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    emailEl.classList.add('err');
+    emailErr.classList.add('show');
+    emailEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  emailEl.classList.remove('err');
+  emailErr.classList.remove('show');
+
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = 'กำลังส่ง...';
+  btn.disabled = true;
+
+  try {
+    await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(buildPayload())
+    });
+
+    localStorage.removeItem('gooseGenFormData');
+    document.getElementById('modal-email').textContent = email;
+    document.getElementById('modal').classList.add('show');
+
+  } catch (err) {
+    console.error('Submit error:', err);
+    alert('เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง');
+  }
+
+  btn.textContent = 'ส่งข้อมูล →';
+  btn.disabled = false;
+});
+
+// ─────────────────────────────────────────
+//  MODAL CLOSE
+// ─────────────────────────────────────────
+function closeModal() {
+  window.location.href = 'index.html';
+}
+
+// ─────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────
+renderCoupons();
+renderAtmos();
+restore();
+addStaticListeners();
+</script>
+</body>
+</html>
