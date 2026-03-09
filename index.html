@@ -19,15 +19,79 @@
       --muted:     #5A4F40;
     }
 
+    html { scroll-behavior: smooth; }
+
     body {
       font-family: 'DM Sans', sans-serif;
       background: var(--bg);
       color: var(--text);
-      min-height: 100vh;
     }
 
-    /* ── LANDING ── */
-    #landing {
+    /* ── NAVBAR ── */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      padding: 0.9rem 2rem;
+      background: rgba(250,243,227,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      gap: 1rem;
+    }
+
+    .nav-logo {
+      font-family: 'Caveat', cursive;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .nav-logo em { color: var(--secondary); font-style: normal; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      margin-left: auto;
+    }
+
+    .nav-link {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 0.45rem 1rem;
+      border-radius: 999px;
+      letter-spacing: 0.06em;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-link:hover { background: var(--bg-dark); color: var(--text); }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.5rem 1.4rem;
+      border-radius: 999px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      background: var(--secondary);
+      color: #fff;
+      box-shadow: 3px 3px 0 rgba(72,92,194,0.28);
+      transition: transform 0.12s, box-shadow 0.12s;
+      margin-left: 0.5rem;
+    }
+    .nav-cta:hover  { transform: translate(-1px,-1px); box-shadow: 5px 5px 0 rgba(72,92,194,0.28); }
+    .nav-cta:active { transform: translate(1px,1px);   box-shadow: 1px 1px 0 rgba(72,92,194,0.28); }
+
+    /* ── HERO ── */
+    #hero {
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -36,7 +100,6 @@
       overflow: hidden;
     }
 
-    /* Animated deco circles */
     .deco-circle {
       position: absolute;
       border-radius: 50%;
@@ -47,10 +110,8 @@
     .dc1 { width: 340px; height: 340px; top: -100px; left: -80px; border-color: var(--primary); animation: spin 40s linear infinite; }
     .dc2 { width: 500px; height: 500px; bottom: -140px; right: -100px; border-color: var(--secondary); animation: spin 55s linear infinite reverse; }
     .dc3 { width: 180px; height: 180px; top: 30%; right: 10%; border-color: var(--primary); animation: spin 25s linear infinite; opacity: 0.07; }
-
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Scattered stars */
     .scatter {
       position: absolute;
       pointer-events: none;
@@ -60,7 +121,6 @@
       z-index: 1;
     }
 
-    /* Wave bottom */
     .wave-bottom {
       position: absolute;
       bottom: 0; left: 0;
@@ -68,8 +128,7 @@
       z-index: 1;
     }
 
-    /* Hero content */
-    .hero {
+    .hero-content {
       position: relative;
       z-index: 2;
       text-align: center;
@@ -108,7 +167,6 @@
     .st.blue { color: var(--secondary); opacity: 0.35; }
     .st.sm   { font-size: 0.6rem; opacity: 0.22; }
 
-    /* Button */
     .btn-fill {
       display: inline-flex;
       align-items: center;
@@ -130,18 +188,229 @@
     }
     .btn-fill:hover  { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 rgba(72,92,194,0.3); }
     .btn-fill:active { transform: translate(1px,1px);   box-shadow: 2px 2px 0 rgba(72,92,194,0.3); }
+
+    /* ── HOW TO USE SECTION ── */
+    #how-to {
+      padding: 6rem 1.5rem 5rem;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      text-align: center;
+      margin-bottom: 0.6rem;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 700;
+      color: var(--text);
+      text-align: center;
+      margin-bottom: 0.6rem;
+      line-height: 1.25;
+    }
+    .section-title em { color: var(--secondary); font-style: italic; }
+
+    .section-sub {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 3.5rem;
+      line-height: 1.7;
+    }
+
+    /* Steps */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 4rem;
+    }
+
+    .step-card {
+      background: var(--bg-dark);
+      border-radius: 24px;
+      padding: 1.75rem 1.5rem;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.05);
+      position: relative;
+    }
+
+    .step-num {
+      font-family: 'Caveat', cursive;
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--secondary);
+      opacity: 0.18;
+      line-height: 1;
+      margin-bottom: 0.75rem;
+    }
+
+    .step-icon {
+      font-size: 1.75rem;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+
+    .step-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+
+    .step-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* What's inside */
+    .fields-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1.25rem;
+      text-align: center;
+    }
+    .fields-title em { color: var(--primary); font-style: italic; }
+
+    .fields-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .field-chip {
+      background: var(--bg-dark);
+      border-radius: 16px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.04);
+    }
+
+    .field-chip-num {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: var(--secondary);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .field-chip-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .field-chip-sub {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.1rem;
+    }
+
+    /* Tips */
+    .tips-box {
+      background: var(--bg-dark);
+      border-radius: 24px;
+      padding: 2rem 2rem;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.05);
+    }
+
+    .tips-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+    .tips-title em { color: var(--primary); font-style: italic; }
+
+    .tips-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .tips-list li {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.6;
+      padding-left: 1.4rem;
+      position: relative;
+    }
+    .tips-list li::before {
+      content: '✦';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-size: 0.6rem;
+      top: 0.3rem;
+      opacity: 0.6;
+    }
+
+    /* CTA bottom */
+    .cta-bottom {
+      text-align: center;
+      padding: 4rem 1.5rem 5rem;
+      background: var(--bg-dark);
+    }
+
+    .cta-bottom .section-title { margin-bottom: 1rem; }
+    .cta-bottom .section-sub   { margin-bottom: 2rem; }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      border-top: 1px solid rgba(0,0,0,0.06);
+    }
+    footer span { color: var(--primary); }
+
+    @media (max-width: 600px) {
+      .navbar { padding: 0.75rem 1.25rem; }
+      .nav-link { display: none; }
+      #how-to { padding: 5rem 1.25rem 4rem; }
+    }
   </style>
 </head>
 <body>
 
-<div id="landing">
+<!-- ══════════ NAVBAR ══════════ -->
+<nav class="navbar">
+  <a href="#hero" class="nav-logo">Goose <em>Gen</em></a>
+  <div class="nav-links">
+    <a href="#hero"   class="nav-link">Home</a>
+    <a href="#how-to" class="nav-link">วิธีใช้งาน</a>
+    <a href="form.html" class="nav-cta">เริ่มต้นเลย →</a>
+  </div>
+</nav>
 
-  <!-- Deco circles -->
+
+<!-- ══════════ HERO ══════════ -->
+<section id="hero">
+
   <div class="deco-circle dc1"></div>
   <div class="deco-circle dc2"></div>
   <div class="deco-circle dc3"></div>
 
-  <!-- Scattered stars -->
   <span class="scatter" style="top:10%;left:16%">✦</span>
   <span class="scatter" style="top:20%;right:14%;color:var(--secondary);font-size:0.7rem;opacity:0.22">✦</span>
   <span class="scatter" style="top:55%;left:8%;font-size:1.3rem;opacity:0.18">✦</span>
@@ -149,7 +418,7 @@
   <span class="scatter" style="bottom:25%;right:9%;font-size:1rem;opacity:0.22">✦</span>
   <span class="scatter" style="bottom:38%;left:24%;font-size:0.7rem;opacity:0.18;color:var(--secondary)">✦</span>
 
-  <div class="hero">
+  <div class="hero-content">
     <div class="star-row">
       <span class="st">✦</span>
       <span class="st sm">✦</span>
@@ -176,7 +445,132 @@
     <path d="M0,70 C240,30 480,90 720,60 C960,30 1200,80 1440,55 L1440,100 L0,100Z" fill="#F0E6CC" opacity="0.35"/>
   </svg>
 
+</section>
+
+
+<!-- ══════════ HOW TO USE ══════════ -->
+<section id="how-to">
+
+  <div class="section-label">✦ วิธีการใช้งาน ✦</div>
+  <h2 class="section-title">ใช้งานง่าย <em>4 ขั้นตอน</em></h2>
+  <p class="section-sub">กรอกข้อมูลแบรนด์ของคุณ แล้วปล่อยให้ AI สร้างภาพให้อัตโนมัติ</p>
+
+  <!-- Steps -->
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-num">01</div>
+      <span class="step-icon">🎨</span>
+      <div class="step-title">กรอกข้อมูลแบรนด์</div>
+      <div class="step-desc">ใส่ชื่อแบรนด์, สี CI, logo และภาพอ้างอิงสไตล์ที่ต้องการ</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">02</div>
+      <span class="step-icon">🗂️</span>
+      <div class="step-title">เพิ่ม Content</div>
+      <div class="step-desc">กรอก Voucher, Collection, Coupon และภาพบรรยากาศของแบรนด์</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">03</div>
+      <span class="step-icon">📧</span>
+      <div class="step-title">ใส่ Email</div>
+      <div class="step-desc">ระบุ email สำหรับรับผลลัพธ์ภาพที่ AI สร้างเสร็จแล้ว</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">04</div>
+      <span class="step-icon">🪿</span>
+      <div class="step-title">รับภาพทาง Email</div>
+      <div class="step-desc">กด "ส่งข้อมูล" รอรับภาพแบรนด์ที่สร้างอัตโนมัติทาง email</div>
+    </div>
+  </div>
+
+  <!-- Fields inside the form -->
+  <div class="fields-title">ข้อมูลที่ต้องกรอกใน <em>ฟอร์ม</em></div>
+  <div class="fields-grid">
+    <div class="field-chip">
+      <div class="field-chip-num">1</div>
+      <div>
+        <div class="field-chip-label">Biodata</div>
+        <div class="field-chip-sub">ชื่อแบรนด์ · สี CI · Logo</div>
+      </div>
+    </div>
+    <div class="field-chip">
+      <div class="field-chip-num">2</div>
+      <div>
+        <div class="field-chip-label">Ref Pics</div>
+        <div class="field-chip-sub">ภาพอ้างอิงสไตล์ 3 รูป</div>
+      </div>
+    </div>
+    <div class="field-chip">
+      <div class="field-chip-num">3</div>
+      <div>
+        <div class="field-chip-label">Voucher</div>
+        <div class="field-chip-sub">ชื่อ · รายละเอียด · 5 รูป</div>
+      </div>
+    </div>
+    <div class="field-chip">
+      <div class="field-chip-num">4</div>
+      <div>
+        <div class="field-chip-label">Collection</div>
+        <div class="field-chip-sub">ชื่อ · รายละเอียด · 10 รูป</div>
+      </div>
+    </div>
+    <div class="field-chip">
+      <div class="field-chip-num">5</div>
+      <div>
+        <div class="field-chip-label">Coupons</div>
+        <div class="field-chip-sub">Dynamic สูงสุด 30 ใบ</div>
+      </div>
+    </div>
+    <div class="field-chip">
+      <div class="field-chip-num">6</div>
+      <div>
+        <div class="field-chip-label">ภาพบรรยากาศ</div>
+        <div class="field-chip-sub">Dynamic สูงสุด 5 ชุด</div>
+      </div>
+    </div>
+    <div class="field-chip">
+      <div class="field-chip-num">7</div>
+      <div>
+        <div class="field-chip-label">Rich Menu</div>
+        <div class="field-chip-sub">ภาพ Line Rich Menu</div>
+      </div>
+    </div>
+    <div class="field-chip">
+      <div class="field-chip-num">8</div>
+      <div>
+        <div class="field-chip-label">Email</div>
+        <div class="field-chip-sub">รับผลลัพธ์ทาง email</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tips -->
+  <div class="tips-box">
+    <div class="tips-title">✦ <em>Tips</em> การใช้งาน</div>
+    <ul class="tips-list">
+      <li>ระบบบันทึกข้อมูลอัตโนมัติทุกครั้งที่กรอก หากปิดหน้าต่างแล้วกลับมา ข้อมูลจะยังอยู่ครบ</li>
+      <li>ใส่ URL รูปภาพที่ใช้งานได้จริง (Google Drive public link, Imgur, Cloudinary ฯลฯ) เพื่อให้ AI ดึงภาพได้ถูกต้อง</li>
+      <li>สามารถพิมพ์ hex code สี CI ตรง ๆ ได้เลย เช่น <code style="background:var(--bg);padding:0.1rem 0.4rem;border-radius:4px;font-size:0.82rem">#FF5733</code></li>
+      <li>Coupon แต่ละใบมีประเภทให้เลือก เช่น รับฟรี, 1แถม1, ส่วนลด บาท/เปอร์เซนต์, Birthday, Double คุ้ม</li>
+      <li>กดปุ่ม "ลบทั้งหมด" ใน navbar เพื่อล้างข้อมูลในฟอร์มและเริ่มใหม่ได้ตลอดเวลา</li>
+    </ul>
+  </div>
+
+</section>
+
+
+<!-- ══════════ CTA BOTTOM ══════════ -->
+<div class="cta-bottom">
+  <h2 class="section-title">พร้อมแล้ว? <em>เริ่มเลย</em></h2>
+  <p class="section-sub">กรอกข้อมูลแบรนด์ของคุณ แล้วรอรับภาพทาง email</p>
+  <a href="form.html" class="btn-fill">เริ่มต้นเลย →</a>
 </div>
+
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  ✦ Built with <span>Goose Gen</span> · Powered by n8n
+</footer>
 
 </body>
 </html>
