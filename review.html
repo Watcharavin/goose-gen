@@ -706,9 +706,17 @@ function esc(str) {
     .replace(/>/g, '&gt;');
 }
 
+function convertGDriveUrl(url) {
+  if (!url) return url;
+  const m = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w1000`;
+  return url;
+}
+
 function thumb(url, cls) {
   if (!url) return '';
-  return `<img src="${esc(url)}" class="${cls}" alt="" onerror="this.style.display='none'">`;
+  const src = convertGDriveUrl(url);
+  return `<img src="${esc(src)}" class="${cls}" alt="" onerror="this.style.display='none'">`;
 }
 
 function chipClass(type) {

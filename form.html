@@ -997,6 +997,30 @@ syncThemeBtn();
 const WEBHOOK_URL = "https://n8nsrv.arycu.com/webhook-test/goose-gen";
 
 // ─────────────────────────────────────────
+//  GOOGLE DRIVE LINK CONVERTER
+// ─────────────────────────────────────────
+function convertGDriveUrl(url) {
+  if (!url) return url;
+  const m = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w1000`;
+  return url;
+}
+
+// Auto-convert on paste — event delegation covers static + dynamic URL inputs
+document.getElementById('the-form').addEventListener('paste', e => {
+  const el = e.target;
+  if (el.type !== 'url') return;
+  setTimeout(() => {
+    const converted = convertGDriveUrl(el.value);
+    if (converted !== el.value) {
+      el.value = converted;
+      // Dispatch input event so the image preview handler and autoSave both fire
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  }, 0);
+}, true);
+
+// ─────────────────────────────────────────
 //  COLOR PICKERS
 // ─────────────────────────────────────────
 [1, 2, 3].forEach(n => {
@@ -1625,7 +1649,7 @@ document.getElementById('the-form').addEventListener('input', e => {
   }
 
   const img = preview.querySelector('img');
-  const url = input.value.trim();
+  const url = convertGDriveUrl(input.value.trim());
 
   if (!url) {
     preview.classList.remove('show');
