@@ -23,12 +23,12 @@
     }
 
     [data-theme="dark"] {
-      --bg:        #1C1610;
-      --bg-dark:   #261D14;
-      --primary:   #D46860;
+      --bg:        #111111;
+      --bg-dark:   #1C1C1C;
+      --primary:   #E07068;
       --secondary: #7B8FE0;
-      --text:      #F5EDDA;
-      --muted:     #9C8870;
+      --text:      #F0F0F0;
+      --muted:     #888888;
     }
 
     /* Smooth color transition during theme switch */
@@ -109,7 +109,7 @@
       display: flex;
       align-items: center;
       padding: 0.9rem 2rem;
-      background: rgba(250,243,227,0.85);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(0,0,0,0.06);
       gap: 1rem;
@@ -572,10 +572,11 @@
 
     /* ── DARK MODE OVERRIDES ── */
     [data-theme="dark"] .navbar {
-      background: rgba(28,22,16,0.9);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
       border-bottom-color: rgba(255,255,255,0.06);
     }
-    [data-theme="dark"] .wave-bottom path { fill: var(--bg); }
+    .wave-bottom path { fill: var(--bg-dark); }
+    [data-theme="dark"] .wave-bottom path { fill: rgba(255,255,255,0.06); opacity: 1; }
     [data-theme="dark"] .step-card  { box-shadow: 6px 6px 0 rgba(0,0,0,0.3); }
     [data-theme="dark"] .field-chip { box-shadow: 4px 4px 0 rgba(0,0,0,0.25); }
     [data-theme="dark"] .tips-box   { box-shadow: 6px 6px 0 rgba(0,0,0,0.3); }
