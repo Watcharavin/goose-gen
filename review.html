@@ -555,6 +555,10 @@
       <span class="rv-label">Logo</span>
       <div id="rv-logo" style="margin-top:0.35rem"></div>
     </div>
+    <div class="rv-row">
+      <span class="rv-label">Category</span>
+      <span class="rv-value" id="rv-category"><span class="rv-empty">—</span></span>
+    </div>
   </div>
 
   <!-- ════ 2. REF PICS ════ -->
@@ -567,6 +571,10 @@
       </div>
     </div>
     <div class="rv-thumbs" id="rv-refPics"></div>
+    <div class="rv-row" style="margin-top:0.75rem">
+      <span class="rv-label">Style Lock Strength</span>
+      <span class="rv-value" id="rv-styleLock"><span class="rv-empty">—</span></span>
+    </div>
   </div>
 
   <!-- ════ 3. VOUCHER ════ -->
@@ -844,12 +852,20 @@ function renderReview(d) {
     ? thumb(d.biodata.logoLink, 'rv-thumb')
     : '<span class="rv-empty">—</span>';
 
+  document.getElementById('rv-category').innerHTML = d.biodata?.category
+    ? esc(d.biodata.category)
+    : '<span class="rv-empty">—</span>';
+
   // 2. Ref Pics
   const refs = (d.refPics || []).filter(Boolean);
   const refEl = document.getElementById('rv-refPics');
   refEl.innerHTML = refs.length
     ? refs.map(u => thumb(u, 'rv-thumb')).join('')
     : '<span class="rv-empty">ไม่มีภาพอ้างอิง</span>';
+
+  document.getElementById('rv-styleLock').innerHTML = d.styleLockStrength
+    ? `<strong>${esc(d.styleLockStrength)}</strong>`
+    : '<span class="rv-empty">—</span>';
 
   // 3. Voucher
   document.getElementById('rv-vTitle').innerHTML = d.voucher?.title

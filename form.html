@@ -794,6 +794,11 @@
       <label class="flabel" for="logoLink">Link Picture Logo</label>
       <input type="url" id="logoLink" class="finput" placeholder="https://...">
     </div>
+
+    <div class="field">
+      <label class="flabel" for="category">Category</label>
+      <input type="text" id="category" class="finput" placeholder="หมวดหมู่ของแบรนด์">
+    </div>
   </div>
 
   <!-- ════ 2. REF PICS ════ -->
@@ -816,6 +821,16 @@
     <div class="field">
       <label class="flabel" for="ref3">Image Link 3</label>
       <input type="url" id="ref3" class="finput" placeholder="https://...">
+    </div>
+
+    <div class="field">
+      <label class="flabel" for="styleLockStrength">Style Lock Strength</label>
+      <select id="styleLockStrength" class="fselect">
+        <option value="">— เลือกระดับ —</option>
+        <option value="soft">Soft</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+      </select>
     </div>
   </div>
 
@@ -1530,9 +1545,11 @@ function buildPayload() {
     biodata: {
       brandName: g('brandName'),
       ciColors:  [g('ciColor1'), g('ciColor2'), g('ciColor3')],
-      logoLink:  g('logoLink')
+      logoLink:  g('logoLink'),
+      category:  g('category')
     },
     refPics: [g('ref1'), g('ref2'), g('ref3')],
+    styleLockStrength: g('styleLockStrength'),
     voucher: {
       title:  g('vTitle'),
       detail: g('vDetail'),
@@ -1608,8 +1625,10 @@ function restore() {
       });
     }
     set('logoLink', d.biodata?.logoLink);
+    set('category', d.biodata?.category);
 
     d.refPics?.forEach((v, i) => set(`ref${i + 1}`, v));
+    set('styleLockStrength', d.styleLockStrength);
 
     set('vTitle',  d.voucher?.title);
     set('vDetail', d.voucher?.detail);
