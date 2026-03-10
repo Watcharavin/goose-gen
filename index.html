@@ -282,6 +282,7 @@
     .steps .step-card:nth-child(2) { animation-delay: 0.12s; }
     .steps .step-card:nth-child(3) { animation-delay: 0.24s; }
     .steps .step-card:nth-child(4) { animation-delay: 0.36s; }
+    .steps .step-card:nth-child(5) { animation-delay: 0.48s; }
 
     /* Stagger — field chips */
     .fields-grid .field-chip:nth-child(1) { animation-delay: 0s; }
@@ -325,8 +326,8 @@
     /* Steps */
     .steps {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.25rem;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
       margin-bottom: 4rem;
       position: relative;
     }
@@ -336,8 +337,8 @@
       content: '';
       position: absolute;
       top: 2.6rem;
-      left: calc(25% - 0.5rem);
-      right: calc(25% - 0.5rem);
+      left: calc(20% - 0.5rem);
+      right: calc(20% - 0.5rem);
       height: 2px;
       background: repeating-linear-gradient(90deg, var(--secondary) 0, var(--secondary) 6px, transparent 6px, transparent 14px);
       opacity: 0.18;
@@ -398,8 +399,11 @@
     }
 
     @media (max-width: 860px) {
-      .steps { grid-template-columns: repeat(2, 1fr); }
+      .steps { grid-template-columns: repeat(3, 1fr); }
       .steps::before { display: none; }
+    }
+    @media (max-width: 600px) {
+      .steps { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 480px) {
       .steps { grid-template-columns: 1fr; gap: 0.875rem; }
@@ -629,7 +633,7 @@
   <div class="how-to-inner">
 
     <div class="section-label">✦ วิธีการใช้งาน ✦</div>
-    <h2 class="section-title">ใช้งานง่าย <em>4 ขั้นตอน</em></h2>
+    <h2 class="section-title">ใช้งานง่าย <em>5 ขั้นตอน</em></h2>
     <p class="section-sub">กรอกข้อมูลแบรนด์ของคุณ แล้วปล่อยให้ AI สร้างภาพให้อัตโนมัติ</p>
 
     <!-- Steps -->
@@ -649,14 +653,20 @@
       <div class="step-card reveal">
         <div class="step-badge">3</div>
         <span class="step-icon">📧</span>
-        <div class="step-title">ใส่ Email</div>
-        <div class="step-desc">ระบุ email สำหรับรับผลลัพธ์ภาพที่ AI สร้างเสร็จแล้ว</div>
+        <div class="step-title">ใส่ Email & ส่ง</div>
+        <div class="step-desc">ระบุ email แล้วกด "ตรวจสอบข้อมูล →" เพื่อไปหน้าสรุป</div>
       </div>
       <div class="step-card reveal">
         <div class="step-badge">4</div>
+        <span class="step-icon">🔍</span>
+        <div class="step-title">ตรวจสอบข้อมูล</div>
+        <div class="step-desc">ตรวจสอบความถูกต้องทุกข้อมูล แล้วกด "ยืนยันส่งข้อมูล →"</div>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-badge">5</div>
         <span class="step-icon">🪿</span>
         <div class="step-title">รับภาพทาง Email</div>
-        <div class="step-desc">กด "ส่งข้อมูล" รอรับภาพแบรนด์ที่สร้างอัตโนมัติทาง email</div>
+        <div class="step-desc">รอรับภาพแบรนด์ที่ AI สร้างอัตโนมัติส่งตรงถึง email ของคุณ</div>
       </div>
     </div>
 
