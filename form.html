@@ -745,6 +745,9 @@
       </div>
     </div>
     <button type="button" class="theme-toggle" onclick="toggleTheme()" title="Dark mode"></button>
+    <input type="file" id="import-input" accept=".json" style="display:none" onchange="importJSON(event)">
+    <button type="button" class="btn btn-outline" onclick="exportJSON()" title="Export JSON">💾 Export</button>
+    <button type="button" class="btn btn-outline" onclick="document.getElementById('import-input').click()" title="Import JSON">📂 Import</button>
     <button type="button" class="btn btn-outline" style="border-color:var(--primary);color:var(--primary);box-shadow:3px 3px 0 rgba(194,80,72,0.15)" onclick="clearAll()">ลบทั้งหมด</button>
     <a href="index.html" class="btn btn-outline">← กลับ</a>
   </div>
@@ -1603,70 +1606,107 @@ function flashSave() {
 }
 
 // ─────────────────────────────────────────
+//  POPULATE FORM FROM DATA OBJECT
+// ─────────────────────────────────────────
+function populateForm(d) {
+  const set = (id, v) => {
+    const el = document.getElementById(id);
+    if (el && v != null && v !== '') el.value = v;
+  };
+
+  set('brandName', d.biodata?.brandName);
+  if (d.biodata?.ciColors) {
+    d.biodata.ciColors.forEach((c, i) => {
+      const n = i + 1;
+      set(`ciColor${n}`, c);
+      if (c) document.getElementById(`hex${n}`).value = c.toUpperCase();
+    });
+  }
+  set('logoLink', d.biodata?.logoLink);
+  set('category', d.biodata?.category);
+
+  d.refPics?.forEach((v, i) => set(`ref${i + 1}`, v));
+  set('styleLockStrength', d.styleLockStrength);
+
+  set('vTitle',  d.voucher?.title);
+  set('vDetail', d.voucher?.detail);
+  d.voucher?.images?.forEach((v, i) => set(`vImg${i + 1}`, v));
+
+  set('cTitle',  d.collection?.title);
+  set('cDetail', d.collection?.detail);
+  d.collection?.images?.forEach((v, i) => set(`cImg${i + 1}`, v));
+
+  const cc = d._meta?.couponsCount ?? d.coupons?.length ?? 0;
+  if (cc > 0 && d.coupons?.length) {
+    d.coupons.slice(0, cc).forEach(c => {
+      addCoupon({
+        title:  c.title  || '',
+        type:   c.type   || COUPON_TYPES[0],
+        detail: c.detail || '',
+        images: c.images?.length ? [...c.images] : ['', '', '', '', '']
+      });
+    });
+  }
+
+  const ac = d._meta?.atmosCount ?? d.atmosphere?.length ?? 0;
+  if (ac > 0 && d.atmosphere?.length) {
+    d.atmosphere.slice(0, ac).forEach(a => {
+      addAtmo({
+        title:  a.title  || '',
+        detail: a.detail || '',
+        images: a.images?.length ? [...a.images] : ['', '', '', '', '']
+      });
+    });
+  }
+
+  set('richMenu', d.richMenu?.imageLink);
+  set('email',    d.email);
+}
+
+// ─────────────────────────────────────────
 //  RESTORE FROM LOCALSTORAGE
 // ─────────────────────────────────────────
 function restore() {
   try {
     const raw = localStorage.getItem('gooseGenFormData');
     if (!raw) return;
-    const d = JSON.parse(raw);
-
-    const set = (id, v) => {
-      const el = document.getElementById(id);
-      if (el && v != null && v !== '') el.value = v;
-    };
-
-    set('brandName', d.biodata?.brandName);
-    if (d.biodata?.ciColors) {
-      d.biodata.ciColors.forEach((c, i) => {
-        const n = i + 1;
-        set(`ciColor${n}`, c);
-        if (c) document.getElementById(`hex${n}`).value = c.toUpperCase();
-      });
-    }
-    set('logoLink', d.biodata?.logoLink);
-    set('category', d.biodata?.category);
-
-    d.refPics?.forEach((v, i) => set(`ref${i + 1}`, v));
-    set('styleLockStrength', d.styleLockStrength);
-
-    set('vTitle',  d.voucher?.title);
-    set('vDetail', d.voucher?.detail);
-    d.voucher?.images?.forEach((v, i) => set(`vImg${i + 1}`, v));
-
-    set('cTitle',  d.collection?.title);
-    set('cDetail', d.collection?.detail);
-    d.collection?.images?.forEach((v, i) => set(`cImg${i + 1}`, v));
-
-    const cc = d._meta?.couponsCount || 0;
-    if (cc > 0 && d.coupons?.length) {
-      d.coupons.slice(0, cc).forEach(c => {
-        addCoupon({
-          title:  c.title  || '',
-          type:   c.type   || COUPON_TYPES[0],
-          detail: c.detail || '',
-          images: c.images?.length ? [...c.images] : ['', '', '', '', '']
-        });
-      });
-    }
-
-    const ac = d._meta?.atmosCount || 0;
-    if (ac > 0 && d.atmosphere?.length) {
-      d.atmosphere.slice(0, ac).forEach(a => {
-        addAtmo({
-          title:  a.title  || '',
-          detail: a.detail || '',
-          images: a.images?.length ? [...a.images] : ['', '', '', '', '']
-        });
-      });
-    }
-
-    set('richMenu', d.richMenu?.imageLink);
-    set('email',    d.email);
-
+    populateForm(JSON.parse(raw));
   } catch (e) {
     console.error('Restore failed:', e);
   }
+}
+
+// ─────────────────────────────────────────
+//  EXPORT / IMPORT JSON
+// ─────────────────────────────────────────
+function exportJSON() {
+  const data = buildPayload();
+  const name = (data.biodata?.brandName || 'form').trim().replace(/\s+/g, '-');
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `goose-gen-${name}.json`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importJSON(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const d = JSON.parse(ev.target.result);
+      couponData = []; atmosData = [];
+      syncCoupons(); syncAtmos();
+      populateForm(d);
+      autoSave();
+      flashSave();
+    } catch {
+      alert('ไฟล์ไม่ถูกต้อง กรุณาเลือกไฟล์ JSON ของ Goose Gen');
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
 }
 
 // ─────────────────────────────────────────
