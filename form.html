@@ -714,6 +714,63 @@
       .topbar-logo { font-size: 1.3rem; }
       .topbar .btn { padding: 0.4rem 0.7rem; font-size: 0.65rem; }
     }
+
+    /* ── SORT LIST (collapsed reorder) ── */
+    .sort-list { display: none; margin-top: 0.5rem; }
+    .sort-list.show { display: flex; flex-direction: column; gap: 0.35rem; }
+    .sort-item {
+      display: flex; align-items: center; gap: 0.6rem;
+      background: var(--bg); border-radius: 10px;
+      padding: 0.5rem 0.85rem;
+      border: 2px solid transparent; cursor: default;
+      transition: border-color 0.15s;
+    }
+    .sort-item.drag-over { border-color: var(--secondary); box-shadow: 0 0 0 2px rgba(72,92,194,0.18); }
+    .sort-item.dragging { opacity: 0.35; }
+    .sort-handle { cursor: grab; color: var(--muted); opacity: 0.5; flex-shrink: 0; font-size: 1rem; line-height: 1; user-select: none; }
+    .sort-handle:active { cursor: grabbing; }
+    .sort-num {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--secondary); color: #fff;
+      font-size: 0.6rem; font-weight: 600;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .sort-name { font-size: 0.85rem; color: var(--text); flex: 1; }
+    .sort-name em { color: var(--muted); font-style: italic; }
+
+    /* ── PASTE BUTTON ── */
+    .url-wrap { position: relative; }
+    .url-wrap .finput { padding-right: 2.4rem; }
+    .paste-btn {
+      position: absolute;
+      right: 0.5rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      font-size: 0.85rem; opacity: 0.35; padding: 0.2rem;
+      transition: opacity 0.15s; line-height: 1;
+    }
+    .paste-btn:hover { opacity: 0.9; }
+
+    /* ── SECTION JUMP NAV ── */
+    .section-nav {
+      position: fixed;
+      right: 1rem; top: 50%; transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 0.3rem;
+      z-index: 90;
+    }
+    .snav-btn {
+      border-radius: 999px;
+      border: 2px solid rgba(0,0,0,0.1);
+      background: var(--bg-dark); color: var(--muted);
+      font-size: 0.62rem; font-weight: 600;
+      padding: 0.28rem 0.65rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; flex-shrink: 0; white-space: nowrap;
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.05);
+    }
+    .snav-btn:hover { background: var(--secondary); color: #fff; border-color: var(--secondary); transform: scale(1.15); }
+    .snav-btn.active { background: var(--secondary); color: #fff; border-color: var(--secondary); }
+    [data-theme="dark"] .snav-btn { border-color: rgba(255,255,255,0.12); box-shadow: 2px 2px 0 rgba(0,0,0,0.3); }
+    @media (max-width: 960px) { .section-nav { display: none; } }
   </style>
 </head>
 <body>
@@ -758,7 +815,7 @@
 <form id="the-form" novalidate>
 
   <!-- ════ 1. BIODATA ════ -->
-  <div class="card">
+  <div class="card" id="sec1">
     <div class="card-head">
       <div class="badge">1</div>
       <div>
@@ -805,7 +862,7 @@
   </div>
 
   <!-- ════ 2. REF PICS ════ -->
-  <div class="card">
+  <div class="card" id="sec2">
     <div class="card-head">
       <div class="badge">2</div>
       <div>
@@ -838,7 +895,7 @@
   </div>
 
   <!-- ════ 3. VOUCHER ════ -->
-  <div class="card">
+  <div class="card" id="sec3">
     <div class="card-head">
       <div class="badge">3</div>
       <div>
@@ -867,7 +924,7 @@
   </div>
 
   <!-- ════ 4. COLLECTION ════ -->
-  <div class="card">
+  <div class="card" id="sec4">
     <div class="card-head">
       <div class="badge">4</div>
       <div>
@@ -901,7 +958,7 @@
   </div>
 
   <!-- ════ 5. COUPONS ════ -->
-  <div class="card">
+  <div class="card" id="sec5">
     <div class="card-head">
       <div class="badge">5</div>
       <div>
@@ -924,7 +981,7 @@
   </div>
 
   <!-- ════ 6. ATMOSPHERE ════ -->
-  <div class="card">
+  <div class="card" id="sec6">
     <div class="card-head">
       <div class="badge">6</div>
       <div>
@@ -947,7 +1004,7 @@
   </div>
 
   <!-- ════ 7. RICH MENU ════ -->
-  <div class="card">
+  <div class="card" id="sec7">
     <div class="card-head">
       <div class="badge">7</div>
       <div>
@@ -962,7 +1019,7 @@
   </div>
 
   <!-- ════ 8. EMAIL ════ -->
-  <div class="card">
+  <div class="card" id="sec8">
     <div class="card-head">
       <div class="badge">8</div>
       <div>
@@ -991,6 +1048,18 @@
 
 </form>
 </div><!-- /.form-wrap -->
+
+<!-- Section jump nav -->
+<nav class="section-nav" id="section-nav">
+  <button class="snav-btn" data-sec="sec1">Biodata</button>
+  <button class="snav-btn" data-sec="sec2">Ref Pics</button>
+  <button class="snav-btn" data-sec="sec3">Voucher</button>
+  <button class="snav-btn" data-sec="sec4">Collection</button>
+  <button class="snav-btn" data-sec="sec5">Coupons</button>
+  <button class="snav-btn" data-sec="sec6">Atmosphere</button>
+  <button class="snav-btn" data-sec="sec7">Rich Menu</button>
+  <button class="snav-btn" data-sec="sec8">Email</button>
+</nav>
 
 
 <!-- CONFIRM CLEAR MODAL -->
@@ -1373,17 +1442,81 @@ const CHEVRON = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" str
 
 function toggleCollapse(card) {
   const body = card.querySelector('.card-body');
+  const sortType = card.id === 'sec5' ? 'coupon' : card.id === 'sec6' ? 'atmo' : null;
+
   if (card.classList.contains('collapsed')) {
     card.classList.remove('collapsed');
     body.style.height = body.scrollHeight + 'px';
     body.addEventListener('transitionend', () => { body.style.height = ''; }, { once: true });
+    if (sortType) hideSortList(sortType);
   } else {
     body.style.height = body.scrollHeight + 'px';
     requestAnimationFrame(() => requestAnimationFrame(() => {
       body.style.height = '0';
       card.classList.add('collapsed');
+      if (sortType) renderSortList(sortType);
     }));
   }
+}
+
+// ─────────────────────────────────────────
+//  SORT LIST (collapsed reorder)
+// ─────────────────────────────────────────
+function renderSortList(type) {
+  if (type === 'coupon') syncCoupons(); else syncAtmos();
+  const data   = type === 'coupon' ? couponData : atmosData;
+  const listEl = document.getElementById(type === 'coupon' ? 'coupon-sort-list' : 'atmo-sort-list');
+  listEl.innerHTML = '';
+  listEl.classList.add('show');
+
+  if (!data.length) {
+    listEl.innerHTML = '<div style="font-size:0.82rem;color:var(--muted);padding:0.4rem 0">ยังไม่มีรายการ</div>';
+    return;
+  }
+
+  let sortSrc = null;
+  data.forEach((item, idx) => {
+    const label = type === 'coupon' ? `Coupon ${idx + 1}` : `ภาพบรรยากาศ ${idx + 1}`;
+    const row = document.createElement('div');
+    row.className = 'sort-item';
+    row.draggable = true;
+    row.dataset.idx = idx;
+    row.innerHTML = `
+      <div class="sort-handle">⠿</div>
+      <div class="sort-num">${idx + 1}</div>
+      <div class="sort-name">${item.title ? esc(item.title) : `<em>${label}</em>`}</div>
+    `;
+    row.addEventListener('dragstart', () => {
+      sortSrc = idx;
+      setTimeout(() => row.classList.add('dragging'), 0);
+    });
+    row.addEventListener('dragend', () => {
+      row.classList.remove('dragging');
+      listEl.querySelectorAll('.sort-item').forEach(r => r.classList.remove('drag-over'));
+    });
+    row.addEventListener('dragover', e => {
+      e.preventDefault();
+      listEl.querySelectorAll('.sort-item').forEach(r => r.classList.remove('drag-over'));
+      row.classList.add('drag-over');
+    });
+    row.addEventListener('drop', e => {
+      e.preventDefault();
+      listEl.querySelectorAll('.sort-item').forEach(r => r.classList.remove('drag-over'));
+      if (sortSrc === null || sortSrc === idx) return;
+      const arr = type === 'coupon' ? couponData : atmosData;
+      const [moved] = arr.splice(sortSrc, 1);
+      arr.splice(idx, 0, moved);
+      autoSave();
+      renderSortList(type);
+    });
+    listEl.appendChild(row);
+  });
+}
+
+function hideSortList(type) {
+  const listEl = document.getElementById(type === 'coupon' ? 'coupon-sort-list' : 'atmo-sort-list');
+  listEl.classList.remove('show');
+  listEl.innerHTML = '';
 }
 
 function initFormEnhancements() {
@@ -1420,6 +1553,14 @@ function initFormEnhancements() {
     body.className = 'card-body';
     while (head.nextSibling) body.appendChild(head.nextSibling);
     card.appendChild(body);
+
+    // ── Sort list for coupon / atmosphere sections ──
+    if (card.id === 'sec5' || card.id === 'sec6') {
+      const sl = document.createElement('div');
+      sl.className = 'sort-list';
+      sl.id = card.id === 'sec5' ? 'coupon-sort-list' : 'atmo-sort-list';
+      card.appendChild(sl);
+    }
   });
 }
 
@@ -1814,6 +1955,60 @@ initFormEnhancements();
 restore();
 addStaticListeners();
 updateProgress();
+
+// ─────────────────────────────────────────
+//  PASTE BUTTONS
+// ─────────────────────────────────────────
+function injectPasteButtons() {
+  document.querySelectorAll('#the-form input[type="url"]').forEach(input => {
+    if (input.parentElement.classList.contains('url-wrap')) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'url-wrap';
+    input.parentNode.insertBefore(wrap, input);
+    wrap.appendChild(input);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'paste-btn';
+    btn.title = 'Paste จาก clipboard';
+    btn.textContent = '📋';
+    btn.onclick = async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        input.value = text;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      } catch { /* permission denied */ }
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+injectPasteButtons();
+new MutationObserver(injectPasteButtons).observe(
+  document.getElementById('the-form'), { childList: true, subtree: true }
+);
+
+// ─────────────────────────────────────────
+//  SECTION JUMP NAV
+// ─────────────────────────────────────────
+document.getElementById('section-nav').addEventListener('click', e => {
+  const btn = e.target.closest('.snav-btn');
+  if (!btn) return;
+  document.getElementById(btn.dataset.sec)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+const snavObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    document.querySelectorAll('.snav-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.sec === entry.target.id)
+    );
+  });
+}, { threshold: 0.25 });
+
+['sec1','sec2','sec3','sec4','sec5','sec6','sec7','sec8'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) snavObserver.observe(el);
+});
 
 document.getElementById('coupon-carousel').addEventListener('scroll', () => updateCarouselNav('coupon-carousel'));
 document.getElementById('atmo-carousel').addEventListener('scroll', () => updateCarouselNav('atmo-carousel'));
