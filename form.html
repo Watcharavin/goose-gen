@@ -2035,6 +2035,25 @@ addStaticListeners();
 updateProgress();
 
 // ─────────────────────────────────────────
+//  CLOUDINARY UPLOAD
+// ─────────────────────────────────────────
+const CLOUDINARY_CLOUD  = 'dcq3kt2kh';
+const CLOUDINARY_PRESET = 'goose gen';
+
+async function uploadToCloudinary(file) {
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CLOUDINARY_PRESET);
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`,
+    { method: 'POST', body: fd }
+  );
+  if (!res.ok) throw new Error('Upload failed');
+  const data = await res.json();
+  return data.secure_url;
+}
+
+// ─────────────────────────────────────────
 //  PASTE BUTTONS
 // ─────────────────────────────────────────
 function injectPasteButtons() {
@@ -2065,16 +2084,22 @@ function injectPasteButtons() {
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
     fileInput.style.display = 'none';
-    fileInput.onchange = () => {
+    fileInput.onchange = async () => {
       const file = fileInput.files[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = ev => {
-        input.value = ev.target.result;
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-      };
-      reader.readAsDataURL(file);
       fileInput.value = '';
+      uploadBtn.textContent = '⏳';
+      uploadBtn.disabled = true;
+      try {
+        const url = await uploadToCloudinary(file);
+        input.value = url;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      } catch {
+        alert('Upload ไม่สำเร็จ กรุณาลองใหม่');
+      } finally {
+        uploadBtn.textContent = '📁';
+        uploadBtn.disabled = false;
+      }
     };
     wrap.appendChild(fileInput);
 
@@ -2120,6 +2145,12 @@ function switchLogoTab(tab) {
   document.querySelectorAll('.logo-panel').forEach(p => p.classList.toggle('active', p.id === `logo-panel-${tab}`));
 }
 
+function setLogoZoneLoading(on) {
+  const zone = document.getElementById('logoUploadZone');
+  zone.style.opacity = on ? '0.5' : '';
+  zone.style.pointerEvents = on ? 'none' : '';
+}
+
 // Tab buttons
 document.querySelectorAll('.logo-tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -2132,26 +2163,34 @@ document.querySelectorAll('.logo-tab-btn').forEach(btn => {
 const logoZone = document.getElementById('logoUploadZone');
 const logoFileInput = document.getElementById('logoFileInput');
 logoZone.addEventListener('click', () => logoFileInput.click());
-logoFileInput.addEventListener('change', e => {
+logoFileInput.addEventListener('change', async e => {
   const file = e.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => { setLogoUpload(ev.target.result); autoSave(); };
-  reader.readAsDataURL(file);
   e.target.value = '';
+  setLogoZoneLoading(true);
+  try {
+    const url = await uploadToCloudinary(file);
+    setLogoUpload(url);
+    autoSave();
+  } catch { alert('Upload ไม่สำเร็จ กรุณาลองใหม่'); }
+  finally { setLogoZoneLoading(false); }
 });
 
 // Drag & drop
 logoZone.addEventListener('dragover', e => { e.preventDefault(); logoZone.classList.add('drag-over'); });
 logoZone.addEventListener('dragleave', () => logoZone.classList.remove('drag-over'));
-logoZone.addEventListener('drop', e => {
+logoZone.addEventListener('drop', async e => {
   e.preventDefault();
   logoZone.classList.remove('drag-over');
   const file = e.dataTransfer.files[0];
   if (!file || !file.type.startsWith('image/')) return;
-  const reader = new FileReader();
-  reader.onload = ev => { setLogoUpload(ev.target.result); autoSave(); };
-  reader.readAsDataURL(file);
+  setLogoZoneLoading(true);
+  try {
+    const url = await uploadToCloudinary(file);
+    setLogoUpload(url);
+    autoSave();
+  } catch { alert('Upload ไม่สำเร็จ กรุณาลองใหม่'); }
+  finally { setLogoZoneLoading(false); }
 });
 
 // Clear button
