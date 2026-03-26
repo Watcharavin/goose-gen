@@ -738,17 +738,20 @@
     .sort-name { font-size: 0.85rem; color: var(--text); flex: 1; }
     .sort-name em { color: var(--muted); font-style: italic; }
 
-    /* ── PASTE BUTTON ── */
+    /* ── PASTE / UPLOAD BUTTONS ── */
     .url-wrap { position: relative; }
     .url-wrap .finput { padding-right: 2.4rem; }
-    .paste-btn {
+    .url-wrap.has-upload-btn .finput { padding-right: 4.2rem; }
+    .paste-btn, .upload-btn {
       position: absolute;
-      right: 0.5rem; top: 50%; transform: translateY(-50%);
+      top: 50%; transform: translateY(-50%);
       background: none; border: none; cursor: pointer;
       font-size: 0.85rem; opacity: 0.35; padding: 0.2rem;
       transition: opacity 0.15s; line-height: 1;
     }
-    .paste-btn:hover { opacity: 0.9; }
+    .paste-btn { right: 0.5rem; }
+    .upload-btn { right: 2rem; }
+    .paste-btn:hover, .upload-btn:hover { opacity: 0.9; }
 
     /* ── LOGO INPUT TABS ── */
     .logo-tabs { display: flex; gap: 0.4rem; margin-bottom: 0.5rem; }
@@ -1995,7 +1998,7 @@ function closeModal() {
 //  IMAGE URL PREVIEW (event delegation)
 // ─────────────────────────────────────────
 document.getElementById('the-form').addEventListener('input', e => {
-  if (e.target.type !== 'url') return;
+  if (e.target.type !== 'url' && !e.target.dataset.imgInput) return;
   const input = e.target;
 
   // find or create preview element right after input
@@ -2038,22 +2041,54 @@ function injectPasteButtons() {
   document.querySelectorAll('#the-form input[type="url"]').forEach(input => {
     if (input.parentElement.classList.contains('url-wrap')) return;
     const wrap = document.createElement('div');
-    wrap.className = 'url-wrap';
+    wrap.className = 'url-wrap has-upload-btn';
     input.parentNode.insertBefore(wrap, input);
     wrap.appendChild(input);
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'paste-btn';
-    btn.title = 'Paste จาก clipboard';
-    btn.textContent = '📋';
-    btn.onclick = async () => {
+
+    // Paste button
+    const pasteBtn = document.createElement('button');
+    pasteBtn.type = 'button';
+    pasteBtn.className = 'paste-btn';
+    pasteBtn.title = 'Paste จาก clipboard';
+    pasteBtn.textContent = '📋';
+    pasteBtn.onclick = async () => {
       try {
         const text = await navigator.clipboard.readText();
         input.value = text;
         input.dispatchEvent(new Event('input', { bubbles: true }));
       } catch { /* permission denied */ }
     };
-    wrap.appendChild(btn);
+    wrap.appendChild(pasteBtn);
+
+    // Upload button + hidden file input
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.style.display = 'none';
+    fileInput.onchange = () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        input.value = ev.target.result;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      };
+      reader.readAsDataURL(file);
+      fileInput.value = '';
+    };
+    wrap.appendChild(fileInput);
+
+    const uploadBtn = document.createElement('button');
+    uploadBtn.type = 'button';
+    uploadBtn.className = 'upload-btn';
+    uploadBtn.title = 'Upload รูปภาพ';
+    uploadBtn.textContent = '📁';
+    uploadBtn.onclick = () => fileInput.click();
+    wrap.appendChild(uploadBtn);
+
+    // Allow base64 values (not just URLs)
+    input.type = 'text';
+    input.dataset.imgInput = 'true';
   });
 }
 
