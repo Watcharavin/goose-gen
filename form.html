@@ -750,6 +750,50 @@
     }
     .paste-btn:hover { opacity: 0.9; }
 
+    /* ── LOGO INPUT TABS ── */
+    .logo-tabs { display: flex; gap: 0.4rem; margin-bottom: 0.5rem; }
+    .logo-tab-btn {
+      flex: 1; padding: 0.45rem 0.6rem;
+      background: var(--bg); border: 2px solid rgba(0,0,0,0.09);
+      border-radius: 10px; font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem; font-weight: 600; color: var(--muted);
+      cursor: pointer; transition: all 0.15s; text-align: center;
+    }
+    .logo-tab-btn.active {
+      background: var(--secondary); border-color: var(--secondary);
+      color: #fff;
+    }
+    [data-theme="dark"] .logo-tab-btn { border-color: rgba(255,255,255,0.1); }
+    .logo-panel { display: none; }
+    .logo-panel.active { display: block; }
+    .logo-upload-zone {
+      border: 2px dashed rgba(0,0,0,0.15); border-radius: 12px;
+      padding: 1.2rem; text-align: center; cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      background: var(--bg);
+    }
+    [data-theme="dark"] .logo-upload-zone { border-color: rgba(255,255,255,0.12); }
+    .logo-upload-zone:hover, .logo-upload-zone.drag-over {
+      border-color: var(--secondary); background: rgba(72,92,194,0.04);
+    }
+    .logo-upload-zone input[type="file"] { display: none; }
+    .logo-upload-hint { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; }
+    .logo-preview {
+      display: none; margin-top: 0.6rem;
+      position: relative; width: fit-content; margin-inline: auto;
+    }
+    .logo-preview img {
+      max-height: 80px; max-width: 100%; border-radius: 8px;
+      border: 2px solid rgba(0,0,0,0.08);
+    }
+    .logo-preview-clear {
+      position: absolute; top: -6px; right: -6px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--primary); color: #fff;
+      font-size: 0.65rem; font-weight: 700; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; line-height: 1;
+    }
+
     /* ── SECTION JUMP NAV ── */
     .section-nav {
       position: fixed;
@@ -851,8 +895,29 @@
     </div>
 
     <div class="field">
-      <label class="flabel" for="logoLink">Link Picture Logo</label>
-      <input type="url" id="logoLink" class="finput" placeholder="https://...">
+      <label class="flabel">Logo</label>
+      <div class="logo-tabs">
+        <button type="button" class="logo-tab-btn active" data-logo-tab="url">🔗 URL</button>
+        <button type="button" class="logo-tab-btn" data-logo-tab="upload">📁 Upload</button>
+      </div>
+      <div class="logo-panel active" id="logo-panel-url">
+        <div class="url-wrap">
+          <input type="url" id="logoLink" class="finput" placeholder="https://...">
+          <button type="button" class="paste-btn" title="Paste" onclick="navigator.clipboard.readText().then(t=>{document.getElementById('logoLink').value=t})">📋</button>
+        </div>
+      </div>
+      <div class="logo-panel" id="logo-panel-upload">
+        <div class="logo-upload-zone" id="logoUploadZone">
+          <input type="file" id="logoFileInput" accept="image/*">
+          <div style="font-size:1.6rem">🖼️</div>
+          <div style="font-size:0.85rem;font-weight:600;color:var(--text);margin-top:0.2rem">คลิกหรือลากรูปมาวาง</div>
+          <div class="logo-upload-hint">PNG, JPG, WEBP, SVG</div>
+        </div>
+        <div class="logo-preview" id="logoPreview">
+          <img id="logoPreviewImg" src="" alt="logo preview">
+          <button type="button" class="logo-preview-clear" id="logoPreviewClear" title="ลบรูป">✕</button>
+        </div>
+      </div>
     </div>
 
     <div class="field">
@@ -1320,6 +1385,7 @@ function renderCoupons() {
 // ─────────────────────────────────────────
 const MAX_ATMOS = 5;
 let atmosData = [];
+let logoUploadData = ''; // base64 data URL when logo uploaded
 
 function addAtmo(preload = null) {
   if (atmosData.length >= MAX_ATMOS) return;
@@ -1689,7 +1755,7 @@ function buildPayload() {
     biodata: {
       brandName: g('brandName'),
       ciColors:  [g('ciColor1'), g('ciColor2'), g('ciColor3')],
-      logoLink:  g('logoLink'),
+      logoLink:  getLogoValue(),
       category:  g('category')
     },
     refPics: [g('ref1'), g('ref2'), g('ref3')],
@@ -1763,7 +1829,14 @@ function populateForm(d) {
       if (c) document.getElementById(`hex${n}`).value = c.toUpperCase();
     });
   }
-  set('logoLink', d.biodata?.logoLink);
+  const logoVal = d.biodata?.logoLink || '';
+  if (logoVal.startsWith('data:')) {
+    switchLogoTab('upload');
+    setLogoUpload(logoVal);
+  } else {
+    switchLogoTab('url');
+    set('logoLink', logoVal);
+  }
   set('category', d.biodata?.category);
 
   d.refPics?.forEach((v, i) => set(`ref${i + 1}`, v));
@@ -1906,6 +1979,8 @@ function confirmClear() {
   [1, 2, 3].forEach((n, i) => {
     document.getElementById(`hex${n}`).value = defaults[i];
   });
+  switchLogoTab('url');
+  setLogoUpload('');
   localStorage.removeItem('gooseGenFormData');
 }
 
@@ -1981,6 +2056,75 @@ function injectPasteButtons() {
     wrap.appendChild(btn);
   });
 }
+
+// ─────────────────────────────────────────
+//  LOGO TAB + UPLOAD
+// ─────────────────────────────────────────
+
+function getLogoValue() {
+  const activeTab = document.querySelector('.logo-tab-btn.active')?.dataset.logoTab;
+  if (activeTab === 'upload') return logoUploadData;
+  return document.getElementById('logoLink')?.value || '';
+}
+
+function setLogoUpload(dataUrl) {
+  logoUploadData = dataUrl || '';
+  const preview = document.getElementById('logoPreview');
+  const img = document.getElementById('logoPreviewImg');
+  if (dataUrl) {
+    img.src = dataUrl;
+    preview.style.display = 'block';
+  } else {
+    img.src = '';
+    preview.style.display = 'none';
+  }
+}
+
+function switchLogoTab(tab) {
+  document.querySelectorAll('.logo-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.logoTab === tab));
+  document.querySelectorAll('.logo-panel').forEach(p => p.classList.toggle('active', p.id === `logo-panel-${tab}`));
+}
+
+// Tab buttons
+document.querySelectorAll('.logo-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    switchLogoTab(btn.dataset.logoTab);
+    autoSave();
+  });
+});
+
+// File input via click
+const logoZone = document.getElementById('logoUploadZone');
+const logoFileInput = document.getElementById('logoFileInput');
+logoZone.addEventListener('click', () => logoFileInput.click());
+logoFileInput.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => { setLogoUpload(ev.target.result); autoSave(); };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+});
+
+// Drag & drop
+logoZone.addEventListener('dragover', e => { e.preventDefault(); logoZone.classList.add('drag-over'); });
+logoZone.addEventListener('dragleave', () => logoZone.classList.remove('drag-over'));
+logoZone.addEventListener('drop', e => {
+  e.preventDefault();
+  logoZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = ev => { setLogoUpload(ev.target.result); autoSave(); };
+  reader.readAsDataURL(file);
+});
+
+// Clear button
+document.getElementById('logoPreviewClear').addEventListener('click', e => {
+  e.stopPropagation();
+  setLogoUpload('');
+  autoSave();
+});
 
 injectPasteButtons();
 new MutationObserver(injectPasteButtons).observe(
