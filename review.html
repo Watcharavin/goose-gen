@@ -928,9 +928,11 @@ function renderReview(d) {
 
   // 7. Rich Menu
   const rmEl = document.getElementById('rv-richMenu');
-  rmEl.innerHTML = d.richMenu?.imageLink
-    ? thumb(d.richMenu.imageLink, 'rv-thumb-lg')
-    : '<span class="rv-empty">—</span>';
+  const rmImg = d.richMenu?.imageLink ? thumb(d.richMenu.imageLink, 'rv-thumb-lg') : '';
+  const rmDetail = d.richMenu?.detail
+    ? `<div class="rv-row" style="margin-top:0.5rem"><span class="rv-label">รายละเอียด</span><span class="rv-value" style="white-space:pre-wrap">${esc(d.richMenu.detail)}</span></div>`
+    : '';
+  rmEl.innerHTML = (rmImg || rmDetail) ? rmImg + rmDetail : '<span class="rv-empty">—</span>';
 
   // 8. Email
   document.getElementById('rv-email').innerHTML = d.email

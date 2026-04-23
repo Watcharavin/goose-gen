@@ -1077,12 +1077,16 @@
       <div class="badge">7</div>
       <div>
         <div class="card-title">Rich <em>Menu</em></div>
-        <div class="card-sub">ภาพสำหรับ Line Rich Menu</div>
+        <div class="card-sub">รายละเอียด Line Rich Menu</div>
       </div>
     </div>
     <div class="field">
       <label class="flabel" for="richMenu">Image Link</label>
       <input type="url" id="richMenu" class="finput" placeholder="https://...">
+    </div>
+    <div class="field">
+      <label class="flabel" for="richMenuDetail">รายละเอียด Rich Menu</label>
+      <textarea id="richMenuDetail" class="ftextarea" style="min-height:140px" placeholder="กรอกรายละเอียดที่ต้องการ เช่น&#10;- ชื่อเมนู (ใช้อ้างอิงภายใน): เช่น Main Menu&#10;- ข้อความบน Chat Bar: เช่น เปิดเมนู / แตะเพื่อดูเมนู&#10;- ขนาด: Large (2500×1686px) หรือ Small (2500×843px)&#10;- จำนวนปุ่ม &amp; แต่ละปุ่มทำอะไร: เช่น ปุ่ม 1 ไปหน้าสินค้า, ปุ่ม 2 โทรหาเรา&#10;- แนวคิด design: สีโทน, สไตล์ภาพ, ข้อความที่ต้องการบนปุ่ม"></textarea>
     </div>
   </div>
 
@@ -1784,7 +1788,7 @@ function buildPayload() {
       detail: a.detail,
       images: [...a.images]
     })),
-    richMenu: { imageLink: g('richMenu') },
+    richMenu: { imageLink: g('richMenu'), detail: g('richMenuDetail') },
     email:    g('email')
   };
 }
@@ -1877,6 +1881,7 @@ function populateForm(d) {
   }
 
   set('richMenu', d.richMenu?.imageLink);
+  set('richMenuDetail', d.richMenu?.detail);
   set('email',    d.email);
 }
 
