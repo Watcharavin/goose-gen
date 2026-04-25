@@ -425,6 +425,28 @@
     .ferr { font-size: 0.72rem; color: var(--primary); margin-top: 0.3rem; display: none; }
     .ferr.show { display: block; }
 
+    /* ── TOGGLE SWITCH ── */
+    .toggle-label {
+      display: flex; align-items: center; gap: 0.75rem;
+      cursor: pointer; user-select: none;
+    }
+    .toggle-input { display: none; }
+    .toggle-track {
+      position: relative; width: 44px; height: 24px; flex-shrink: 0;
+      background: rgba(0,0,0,0.12); border-radius: 999px;
+      transition: background 0.2s;
+    }
+    [data-theme="dark"] .toggle-track { background: rgba(255,255,255,0.15); }
+    .toggle-input:checked + .toggle-track { background: var(--secondary); }
+    .toggle-thumb {
+      position: absolute; top: 3px; left: 3px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #fff; transition: transform 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .toggle-input:checked + .toggle-track .toggle-thumb { transform: translateX(20px); }
+    .toggle-text { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+
     /* ── COLOR PICKERS ── */
     .color-row { display: flex; gap: 1.5rem; align-items: flex-start; flex-wrap: wrap; }
 
@@ -1106,6 +1128,24 @@
     </div>
   </div>
 
+  <!-- ════ 9. GOOGLE SLIDE ════ -->
+  <div class="card" id="sec9">
+    <div class="card-head">
+      <div class="badge">9</div>
+      <div>
+        <div class="card-title">Google <em>Slide</em></div>
+        <div class="card-sub">ต้องการไฟล์ Google Slide หรือไม่</div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="toggle-label" for="googleSlide">
+        <input type="checkbox" id="googleSlide" class="toggle-input">
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-text">ต้องการรับ Google Slide</span>
+      </label>
+    </div>
+  </div>
+
   <!-- SUBMIT -->
   <div class="submit-wrap">
     <p class="submit-deco">
@@ -1131,6 +1171,7 @@
   <button class="snav-btn" data-sec="sec6">Atmosphere</button>
   <button class="snav-btn" data-sec="sec7">Rich Menu</button>
   <button class="snav-btn" data-sec="sec8">Email</button>
+  <button class="snav-btn" data-sec="sec9">G-Slide</button>
 </nav>
 
 
@@ -1789,7 +1830,8 @@ function buildPayload() {
       images: [...a.images]
     })),
     richMenu: { imageLink: g('richMenu'), detail: g('richMenuDetail') },
-    email:    g('email')
+    email:    g('email'),
+    googleSlide: document.getElementById('googleSlide')?.checked ?? false
   };
 }
 
@@ -1883,6 +1925,8 @@ function populateForm(d) {
   set('richMenu', d.richMenu?.imageLink);
   set('richMenuDetail', d.richMenu?.detail);
   set('email',    d.email);
+  const gsEl = document.getElementById('googleSlide');
+  if (gsEl && d.googleSlide != null) gsEl.checked = !!d.googleSlide;
 }
 
 // ─────────────────────────────────────────

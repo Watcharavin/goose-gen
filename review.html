@@ -680,6 +680,21 @@
     </div>
   </div>
 
+  <!-- ════ 9. GOOGLE SLIDE ════ -->
+  <div class="card">
+    <div class="card-head">
+      <div class="badge">9</div>
+      <div>
+        <div class="card-title">Google <em>Slide</em></div>
+        <div class="card-sub">ต้องการไฟล์ Google Slide หรือไม่</div>
+      </div>
+    </div>
+    <div class="rv-row">
+      <span class="rv-label">Google Slide</span>
+      <span id="rv-googleSlide"><span class="rv-empty">—</span></span>
+    </div>
+  </div>
+
   <!-- CONFIRM BUTTON -->
   <div class="submit-wrap">
     <p class="submit-deco">
@@ -938,6 +953,11 @@ function renderReview(d) {
   document.getElementById('rv-email').innerHTML = d.email
     ? esc(d.email)
     : '<span class="rv-empty">—</span>';
+
+  // 9. Google Slide
+  document.getElementById('rv-googleSlide').innerHTML = d.googleSlide
+    ? '<span style="color:var(--secondary);font-weight:600">✓ ต้องการ</span>'
+    : '<span style="color:var(--muted)">✗ ไม่ต้องการ</span>';
 }
 
 // ─────────────────────────────────────────
