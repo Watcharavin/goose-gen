@@ -933,10 +933,10 @@
       </div>
       <div class="logo-panel" id="logo-panel-upload">
         <div class="logo-upload-zone" id="logoUploadZone">
-          <input type="file" id="logoFileInput" accept="image/*">
+          <input type="file" id="logoFileInput" accept="image/png,image/jpeg,image/webp">
           <div style="font-size:1.6rem">🖼️</div>
           <div style="font-size:0.85rem;font-weight:600;color:var(--text);margin-top:0.2rem">คลิกหรือลากรูปมาวาง</div>
-          <div class="logo-upload-hint">PNG, JPG, WEBP, SVG</div>
+          <div class="logo-upload-hint">PNG, JPG, WEBP เท่านั้น</div>
         </div>
         <div class="logo-preview" id="logoPreview">
           <img id="logoPreviewImg" src="" alt="logo preview">
@@ -2089,6 +2089,14 @@ updateProgress();
 const CLOUDINARY_CLOUD  = 'dcq3kt2kh';
 const CLOUDINARY_PRESET = 'goose gen';
 
+const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+
+function checkFileType(file) {
+  if (ALLOWED_TYPES.includes(file.type)) return null;
+  const ext = file.name.split('.').pop().toUpperCase();
+  return `ไฟล์ "${file.name}" ไม่รองรับ\n\nระบบรองรับเฉพาะ PNG, JPEG และ WEBP เท่านั้น\nเนื่องจาก Cloudinary และระบบประมวลผลภาพต้องการฟอร์แมตมาตรฐานเหล่านี้ เพื่อให้แน่ใจว่าภาพแสดงผลได้ถูกต้องในทุกแพลตฟอร์ม\n\n(ไฟล์ที่อัพโหลด: .${ext})`;
+}
+
 async function uploadToCloudinary(file) {
   const fd = new FormData();
   fd.append('file', file);
@@ -2131,12 +2139,14 @@ function injectPasteButtons() {
     // Upload button + hidden file input
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
-    fileInput.accept = 'image/*';
+    fileInput.accept = 'image/png,image/jpeg,image/webp';
     fileInput.style.display = 'none';
     fileInput.onchange = async () => {
       const file = fileInput.files[0];
       if (!file) return;
       fileInput.value = '';
+      const err = checkFileType(file);
+      if (err) { alert(err); return; }
       uploadBtn.textContent = '⏳';
       uploadBtn.disabled = true;
       try {
@@ -2216,6 +2226,8 @@ logoFileInput.addEventListener('change', async e => {
   const file = e.target.files[0];
   if (!file) return;
   e.target.value = '';
+  const err = checkFileType(file);
+  if (err) { alert(err); return; }
   setLogoZoneLoading(true);
   try {
     const url = await uploadToCloudinary(file);
@@ -2232,7 +2244,9 @@ logoZone.addEventListener('drop', async e => {
   e.preventDefault();
   logoZone.classList.remove('drag-over');
   const file = e.dataTransfer.files[0];
-  if (!file || !file.type.startsWith('image/')) return;
+  if (!file) return;
+  const err = checkFileType(file);
+  if (err) { alert(err); return; }
   setLogoZoneLoading(true);
   try {
     const url = await uploadToCloudinary(file);
