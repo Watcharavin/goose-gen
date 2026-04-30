@@ -2090,11 +2090,23 @@ const CLOUDINARY_CLOUD  = 'dcq3kt2kh';
 const CLOUDINARY_PRESET = 'goose gen';
 
 const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+const BLOCKED_EXTS  = ['avif','gif','svg','bmp','tiff','tif','heic','heif','ico','webm','mp4','mov','pdf'];
 
 function checkFileType(file) {
   if (ALLOWED_TYPES.includes(file.type)) return null;
   const ext = file.name.split('.').pop().toUpperCase();
   return `ไฟล์ "${file.name}" ไม่รองรับ\n\nระบบรองรับเฉพาะ PNG, JPEG และ WEBP เท่านั้น\nเนื่องจาก Cloudinary และระบบประมวลผลภาพต้องการฟอร์แมตมาตรฐานเหล่านี้ เพื่อให้แน่ใจว่าภาพแสดงผลได้ถูกต้องในทุกแพลตฟอร์ม\n\n(ไฟล์ที่อัพโหลด: .${ext})`;
+}
+
+function warnUrlExt(url) {
+  if (!url) return;
+  try {
+    const path = new URL(url).pathname;
+    const ext = path.split('.').pop().toLowerCase().split('?')[0];
+    if (BLOCKED_EXTS.includes(ext)) {
+      alert(`⚠️ URL ที่วางอาจไม่รองรับ\n\nตรวจพบนามสกุล ".${ext}" ซึ่งอาจแสดงผลไม่ถูกต้อง\nระบบรองรับเฉพาะ PNG, JPEG และ WEBP เท่านั้น\n\nหากแน่ใจว่า URL นี้ถูกต้อง สามารถเก็บไว้ได้ แต่อาจมีปัญหาขณะประมวลผล`);
+    }
+  } catch { /* invalid URL — ignore */ }
 }
 
 async function uploadToCloudinary(file) {
@@ -2132,8 +2144,16 @@ function injectPasteButtons() {
         const text = await navigator.clipboard.readText();
         input.value = text;
         input.dispatchEvent(new Event('input', { bubbles: true }));
+        warnUrlExt(text);
       } catch { /* permission denied */ }
     };
+
+    // Native paste (Ctrl+V) and blur (manual type)
+    input.addEventListener('paste', e => {
+      const text = (e.clipboardData || window.clipboardData).getData('text');
+      setTimeout(() => warnUrlExt(text), 0);
+    });
+    input.addEventListener('blur', () => warnUrlExt(input.value));
     wrap.appendChild(pasteBtn);
 
     // Upload button + hidden file input
